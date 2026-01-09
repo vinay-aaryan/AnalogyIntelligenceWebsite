@@ -12,16 +12,25 @@ import dbConnect from "@/lib/db";
 import { Product, Stat, Testimonial } from "@/models/Content";
 
 export default async function Home() {
-  await dbConnect();
-  const [productsRaw, statsRaw, testimonialsRaw] = await Promise.all([
-    Product.find({}).sort({ createdAt: -1 }).lean(),
-    Stat.find({}).sort({ createdAt: -1 }).lean(),
-    Testimonial.find({}).sort({ createdAt: -1 }).lean(),
-  ]);
+  let products = [];
+  let stats = [];
+  let testimonials = [];
 
-  const products = JSON.parse(JSON.stringify(productsRaw));
-  const stats = JSON.parse(JSON.stringify(statsRaw));
-  const testimonials = JSON.parse(JSON.stringify(testimonialsRaw));
+  try {
+    await dbConnect();
+    const [productsRaw, statsRaw, testimonialsRaw] = await Promise.all([
+      Product.find({}).sort({ createdAt: -1 }).lean(),
+      Stat.find({}).sort({ createdAt: -1 }).lean(),
+      Testimonial.find({}).sort({ createdAt: -1 }).lean(),
+    ]);
+
+    products = JSON.parse(JSON.stringify(productsRaw));
+    stats = JSON.parse(JSON.stringify(statsRaw));
+    testimonials = JSON.parse(JSON.stringify(testimonialsRaw));
+  } catch (error) {
+    console.error("Database connection failed, using empty data:", error);
+    // Fallback data is already empty arrays
+  }
 
   return (
     <main style={{ background: "var(--token-bg-page)", minHeight: "100vh" }}>
