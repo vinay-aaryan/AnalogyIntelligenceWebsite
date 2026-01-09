@@ -73,7 +73,11 @@ const services = [
                         <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}>&gt; optimizing_assets...</motion.div>
 
                         {/* Typing Animation Container */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 0, height: 20 }}>
+                        <div style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                            gap: 24
+                        }}>
                             <span style={{ marginRight: 8 }}>&gt;</span>
                             <motion.div
                                 animate={{ width: ["0%", "100%", "100%", "0%"], opacity: [1, 1, 0, 0] }} // Type -> Wait -> FadeOut -> Reset
@@ -338,6 +342,15 @@ export default function DetailedServices() {
             @media (max-width: 968px) {
                 .bento-card-wide, .bento-card {
                     grid-column: span 3 !important;
+                }
+            }
+            @media (max-width: 640px) {
+                div[style*="grid-template-columns"] {
+                    display: flex !important;
+                    flex-direction: column !important;
+                }
+                .bento-card-wide, .bento-card {
+                    width: 100% !important;
                 }
             }
         `}</style>

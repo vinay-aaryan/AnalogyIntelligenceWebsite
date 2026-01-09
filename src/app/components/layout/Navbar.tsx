@@ -1,105 +1,144 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const navItems = [
-    { name: "Services", path: "/services" },
-    { name: "Process", path: "/process" },
-    { name: "Work", path: "/work" },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
-];
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
     const pathname = usePathname();
+    const isHome = pathname === "/";
+    const isAdmin = pathname?.startsWith("/admin");
+    const [scrolled, setScrolled] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    if (pathname?.startsWith("/admin")) return null;
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    // Close mobile menu when route changes
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [pathname]);
+
+    if (isAdmin) return null;
+
+    const navLinks = [
+        { name: "Work", path: "/work" },
+        { name: "Services", path: "/services" },
+        { name: "About", path: "/about" },
+        { name: "Process", path: "/process" },
+    ];
 
     return (
-        <motion.nav
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="glass-panel"
-            style={{
-                position: "fixed",
-                top: 24,
-                left: "50%",
-                transform: "translateX(-50%)",
-                zIndex: 100,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "8px 8px 8px 32px", // Adjusted padding
-                borderRadius: 100,
-                width: "auto",
-                minWidth: 500, // Slightly wider
-                maxWidth: "90%",
-                background: "rgba(255, 255, 255, 0.65)", // More opaque for "cement" feel but still glass
-                backdropFilter: "blur(20px) saturate(180%)", // Stronger blur
-                border: "1px solid rgba(255, 255, 255, 0.8)", // Crisp border
-                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)", // Deeper shadow
-            }}
-        >
-            {/* Logo */}
-            <Link
-                href="/"
-                onClick={() => pathname === "/" && window.scrollTo({ top: 0, behavior: "smooth" })}
-                style={{ fontSize: 18, fontWeight: 700, color: "var(--foreground)", letterSpacing: "-0.03em", paddingRight: 32, fontFamily: "var(--font-heading)" }}
+        <>
+            <motion.nav
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 100,
+                    padding: "20px 0",
+                    mixBlendMode: mobileMenuOpen ? "normal" : "difference",
+                    color: "white"
+                }}
             >
-                Analogy
-            </Link>
+                <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Link href="/" style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.03em", position: "relative", zIndex: 102 }}>
+                        Analogy
+                    </Link>
 
-            {/* Links */}
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                {navItems.map((item) => {
-                    const isActive = pathname === item.path;
-                    return (
-                        <Link
-                            key={item.name}
-                            href={item.path}
-                            style={{
-                                position: "relative",
-                                padding: "8px 20px",
-                                fontSize: 14,
-                                fontWeight: 500,
-                                color: isActive ? "var(--foreground)" : "var(--token-fg-secondary)",
-                                transition: "color 0.2s",
-                                zIndex: 1,
-                            }}
-                        >
-                            {isActive && (
-                                <motion.div
-                                    layoutId="navPill"
-                                    style={{
-                                        position: "absolute",
-                                        inset: 0,
-                                        background: "var(--token-bg-surface)",
-                                        borderRadius: 100,
-                                        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                                        zIndex: -1,
-                                    }}
-                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                />
-                            )}
-                            {item.name}
+                    {/* Desktop Menu */}
+                    <div className="desktop-menu" style={{ display: "flex", gap: 40, alignItems: "center" }}>
+                        {navLinks.map((link) => (
+                            <Link key={link.path} href={link.path} style={{ fontSize: 15, fontWeight: 500, opacity: pathname === link.path ? 1 : 0.6, transition: "opacity 0.2s" }}>
+                                {link.name}
+                            </Link>
+                        ))}
+                        <Link href="/consultation" style={{ padding: "12px 24px", background: "white", color: "black", borderRadius: 100, fontSize: 15, fontWeight: 600 }}>
+                            Book Call
                         </Link>
-                    );
-                })}
-            </div>
+                    </div>
 
-            {/* CTA */}
-            <div style={{ paddingLeft: 12 }}>
-                <Link
-                    href="/consultation"
-                    className="btn-base btn-cement-primary"
-                    style={{ fontSize: 14, padding: "10px 24px" }} // Override padding/font for navbar sizing if needed
-                >
-                    Book Call
-                </Link>
-            </div>
-        </motion.nav>
+                    {/* Mobile Toggle */}
+                    <button
+                        className="mobile-toggle"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", position: "relative", zIndex: 102 }}
+                    >
+                        {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                    </button>
+                </div>
+            </motion.nav>
+
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: "-100%" }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: "-100%" }}
+                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        style={{
+                            position: "fixed",
+                            inset: 0,
+                            background: "#050505",
+                            zIndex: 101, // Behind the navbar text/toggle but above everything else
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            gap: 32
+                        }}
+                    >
+                        {navLinks.map((link, i) => (
+                            <motion.div
+                                key={link.path}
+                                initial={{ opacity: 0, y: 40 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 + i * 0.1 }}
+                            >
+                                <Link
+                                    href={link.path}
+                                    style={{ fontSize: 40, fontWeight: 700, color: "white", letterSpacing: "-0.02em" }}
+                                >
+                                    {link.name}
+                                </Link>
+                            </motion.div>
+                        ))}
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            <Link href="/consultation" style={{ padding: "16px 32px", background: "white", color: "black", borderRadius: 100, fontSize: 18, fontWeight: 600, display: "inline-block", marginTop: 20 }}>
+                                Book Consultation
+                            </Link>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <style jsx global>{`
+                .mobile-toggle {
+                    display: none !important;
+                }
+                @media (max-width: 1024px) {
+                    .desktop-menu {
+                        display: none !important;
+                    }
+                    .mobile-toggle {
+                        display: block !important;
+                    }
+                }
+            `}</style>
+        </>
     );
 }

@@ -178,23 +178,29 @@ export default function Process() {
                 <div style={{ position: "relative", padding: "20px 0" }}>
 
                     {/* Central Line */}
-                    <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 2, background: "rgba(0,0,0,0.06)", transform: "translateX(-50%)", zIndex: 0 }} />
+                    {/* Central Line */}
+                    <div className="timeline-center-line" style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 2, background: "rgba(0,0,0,0.06)", transform: "translateX(-50%)", zIndex: 0 }} />
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: 100 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "clamp(40px, 8vw, 100px)" }}>
                         {steps.map((step, i) => {
                             const isEven = i % 2 === 1;
                             return (
-                                <div key={i} style={{ display: "flex", justifyContent: isEven ? "flex-start" : "flex-end", position: "relative", alignItems: "center" }}>
+                                <div key={i} className="timeline-wrapper" style={{ display: "flex", justifyContent: isEven ? "flex-start" : "flex-end", position: "relative", alignItems: "center" }}>
 
                                     {/* Desktop: Alternating Layout */}
                                     <style jsx>{`
-                                        .timeline-row { flex-direction: row; }
-                                        @media (max-width: 768px) {
-                                            .timeline-row { flex-direction: column !important; align-items: flex-start !important; gap: 40px; }
-                                            .step-card { width: 100% !important; }
-                                            .timeline-dot { left: 20px !important; }
-                                            .timeline-content { padding-left: 60px !important; text-align: left !important; }
-                                            .step-spacer { display: none; }
+                                        /* Default Mobile First */
+                                        .step-card { width: 100%; position: relative; }
+                                        .timeline-center-line { display: none; }
+                                        .timeline-dot { display: none; }
+                                        .timeline-wrapper { justify-content: flex-start; }
+
+                                        /* Desktop Overrides */
+                                        @media (min-width: 901px) {
+                                            .step-card { width: 45%; }
+                                            .timeline-center-line { display: block; }
+                                            .timeline-dot { display: block; }
+                                            /* Wrapper justification is handled by inline style conditional, which works for desktop */
                                         }
                                     `}</style>
 
@@ -202,13 +208,9 @@ export default function Process() {
                                         initial={{ opacity: 0, x: isEven ? 50 : -50 }}
                                         whileInView={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.6, ease: "easeOut" }}
-                                        className={`timeline-row step-card`}
+                                        className={`step-card ${isEven ? 'step-card-right' : 'step-card-left'}`}
                                         style={{
-                                            width: "45%",
                                             position: "relative",
-                                            // The item is either on left or right.
-                                            // Ideally we want the *card* to be on one side, and empty space on the other.
-                                            // But since we are mapping a flex container with justify-content, this div represents the CARD itself.
                                         }}
                                     >
                                         <div className="cement-card" style={{ padding: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
@@ -253,7 +255,7 @@ export default function Process() {
                                     </motion.div>
 
                                     {/* Central Dot */}
-                                    <div style={{
+                                    <div className="timeline-dot" style={{
                                         position: "absolute",
                                         left: "50%",
                                         width: 16,

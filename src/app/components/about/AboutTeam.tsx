@@ -19,7 +19,7 @@ export default function AboutTeam({ team }: { team: any[] }) {
                 <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 32 }}>
                     {team.map((member) => (
                         <motion.div
-                            key={member.id}
+                            key={member._id}
                             whileHover={{ y: -5 }}
                             className="cement-card"
                             style={{
