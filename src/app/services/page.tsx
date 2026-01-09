@@ -283,45 +283,6 @@ function ArticleSection({ service, index }: { service: ServiceItem, index: numbe
                 </motion.div>
             </div>
 
-            <style jsx>{`
-                /* Desktop Layout: Grid */
-                @media (min-width: 968px) {
-                    .service-section {
-                        grid-template-columns: 0.8fr 1.2fr !important; /* 40/60 Split */
-                        align-items: start;
-                        min-height: 80vh; /* Ensure enough height to see sticky effect */
-                    }
-
-                    .sticky-col {
-                        position: relative;
-                        height: 100%; 
-                    }
-
-                    .sticky-content {
-                        position: sticky;
-                        top: 140px; /* Offset from top */
-                    }
-
-                    .content-col {
-                        padding-top: 120px; /* Push content down slightly for visual balance */
-                        padding-left: 60px;
-                    }
-                }
-
-                /* Mobile Layout: Stacked */
-                @media (max-width: 967px) {
-                    .sticky-content {
-                        position: relative;
-                        top: 0;
-                        margin-bottom: 32px;
-                    }
-                    
-                    .content-col {
-                        padding-top: 0;
-                        padding-left: 0;
-                    }
-                }
-            `}</style>
         </article>
     );
 }

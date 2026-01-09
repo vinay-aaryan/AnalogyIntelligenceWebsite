@@ -252,7 +252,7 @@ export default function SelectedWork({ projects }: { projects: any[] }) {
                     </Link>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 32 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 32, justifyContent: "center" }}>
                     {projects.map((project, i) => (
                         <ProductCard key={i} project={project} i={i} />
                     ))}

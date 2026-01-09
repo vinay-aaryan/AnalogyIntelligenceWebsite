@@ -10,8 +10,11 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-main" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-heading" });
 
 export const metadata: Metadata = {
-  title: "ANALOGY | Artificial Intelligence Agency",
+  title: "Analogy Intelligence - Simplifies Complexes",
   description: "Simplifying complexes. AI and software infrastructure for the future.",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export default function RootLayout({
@@ -20,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${jakarta.variable}`}>
         <SmoothScroll>
           <CustomCursor />

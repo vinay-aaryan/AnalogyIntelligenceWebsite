@@ -40,8 +40,8 @@ export default function StatsSection({ stats }: { stats: any[] }) {
                     border: "1px solid #fff",
                     boxShadow: "0px 16px 20px -5px rgba(0,0,0,0.1)"
                 }}>
-                    {items.map((stat: any) => (
-                        <div key={stat.id} style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                    {items.map((stat: any, i: number) => (
+                        <div key={stat._id || stat.id || i} style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                             <h3 style={{ fontSize: "clamp(3rem, 5vw, 4.5rem)", fontWeight: 700, color: "#000", fontFamily: "var(--font-heading)", lineHeight: 1 }}>
                                 <Counter value={stat.value} suffix={stat.suffix} />
                             </h3>

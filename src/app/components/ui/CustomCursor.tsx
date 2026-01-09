@@ -4,7 +4,21 @@ import { useEffect, useState } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
+    const [isMobile, setIsMobile] = useState(true); // Default to true to prevent hydration mismatch flash
     const [isHovered, setIsHovered] = useState(false);
+
+    useEffect(() => {
+        // Check if mobile or touch device
+        const checkMobile = () => {
+            const isTouch = window.matchMedia("(pointer: coarse)").matches;
+            const isSmallScreen = window.innerWidth < 1024;
+            setIsMobile(isTouch || isSmallScreen);
+        };
+
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
 
     // Mouse position
     const mouseX = useMotionValue(0);
@@ -16,6 +30,8 @@ export default function CustomCursor() {
     const cursorY = useSpring(mouseY, springConfig);
 
     useEffect(() => {
+        if (isMobile) return;
+
         const moveCursor = (e: MouseEvent) => {
             mouseX.set(e.clientX - 16); // Center offset for 32px ring
             mouseY.set(e.clientY - 16);
@@ -37,7 +53,9 @@ export default function CustomCursor() {
             window.removeEventListener("mousemove", moveCursor);
             window.removeEventListener("mouseover", handleMouseOver);
         };
-    }, [mouseX, mouseY]);
+    }, [mouseX, mouseY, isMobile]);
+
+    if (isMobile) return null;
 
     return (
         <>

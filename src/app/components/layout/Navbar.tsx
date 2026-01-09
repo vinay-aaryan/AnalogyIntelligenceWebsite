@@ -33,6 +33,14 @@ export default function Navbar() {
         { name: "Process", path: "/process" },
     ];
 
+    const handleLogoClick = (e: React.MouseEvent) => {
+        if (pathname === "/") {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        setMobileMenuOpen(false);
+    };
+
     return (
         <>
             <motion.nav
@@ -51,7 +59,12 @@ export default function Navbar() {
                 }}
             >
                 <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <Link href="/" style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.03em", position: "relative", zIndex: 102 }}>
+                    <Link
+                        href="/"
+                        onClick={handleLogoClick}
+                        style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.03em", position: "relative", zIndex: 102, display: "flex", alignItems: "center", gap: 12 }}
+                    >
+                        <img src="/logo.svg" alt="Analogy Logo" style={{ height: 24, width: 24, borderRadius: "50%", objectFit: "cover" }} />
                         Analogy
                     </Link>
 
@@ -98,6 +111,21 @@ export default function Navbar() {
                             gap: 32
                         }}
                     >
+                        <button
+                            onClick={() => setMobileMenuOpen(false)}
+                            style={{
+                                position: "absolute",
+                                top: 24,
+                                right: 24,
+                                background: "none",
+                                border: "none",
+                                color: "white",
+                                cursor: "pointer"
+                            }}
+                        >
+                            <X size={32} />
+                        </button>
+
                         {navLinks.map((link, i) => (
                             <motion.div
                                 key={link.path}
@@ -107,6 +135,7 @@ export default function Navbar() {
                             >
                                 <Link
                                     href={link.path}
+                                    onClick={() => setMobileMenuOpen(false)}
                                     style={{ fontSize: 40, fontWeight: 700, color: "white", letterSpacing: "-0.02em" }}
                                 >
                                     {link.name}
@@ -118,7 +147,11 @@ export default function Navbar() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
                         >
-                            <Link href="/consultation" style={{ padding: "16px 32px", background: "white", color: "black", borderRadius: 100, fontSize: 18, fontWeight: 600, display: "inline-block", marginTop: 20 }}>
+                            <Link
+                                href="/consultation"
+                                onClick={() => setMobileMenuOpen(false)}
+                                style={{ padding: "16px 32px", background: "white", color: "black", borderRadius: 100, fontSize: 18, fontWeight: 600, display: "inline-block", marginTop: 20 }}
+                            >
                                 Book Consultation
                             </Link>
                         </motion.div>

@@ -6,7 +6,15 @@ import { motion } from "framer-motion";
 export default function StarBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    const [isMobile, setIsMobile] = React.useState(false);
+
     useEffect(() => {
+        // Initial mobile check
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+
         const canvas = canvasRef.current;
         if (!canvas) return;
 
@@ -20,7 +28,8 @@ export default function StarBackground() {
         let centerX = width / 2;
         let centerY = height / 2;
 
-        const PARTICLE_COUNT = 450;
+        // Dynamic particle count based on device width
+        const PARTICLE_COUNT = window.innerWidth < 768 ? 150 : 450;
         const BASE_SPEED = 0.2;
 
         class Particle {
@@ -95,7 +104,10 @@ export default function StarBackground() {
             canvas.width = width;
             canvas.height = height;
 
-            for (let i = 0; i < PARTICLE_COUNT; i++) {
+            // Re-check particle count on init/resize
+            const currentCount = window.innerWidth < 768 ? 150 : 450;
+
+            for (let i = 0; i < currentCount; i++) {
                 particles.push(new Particle(true));
             }
         };
@@ -115,8 +127,13 @@ export default function StarBackground() {
         init();
         animate();
 
+        let resizeTimeout: NodeJS.Timeout;
         const handleResize = () => {
-            init();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                checkMobile();
+                init();
+            }, 200); // Debounce 200ms
         };
 
         window.addEventListener("resize", handleResize);
@@ -124,6 +141,7 @@ export default function StarBackground() {
         return () => {
             window.removeEventListener("resize", handleResize);
             cancelAnimationFrame(animationFrameId);
+            clearTimeout(resizeTimeout);
         };
     }, []);
 
@@ -143,63 +161,78 @@ export default function StarBackground() {
                 justifyContent: "center",
                 zIndex: -1
             }}>
-                {/* Rotating Nebula - Layer 1 (Dark Violet) */}
-                <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{
-                        duration: 60,
-                        repeat: Infinity,
-                        ease: "linear"
-                    }}
-                    style={{
+                {isMobile ? (
+                    /* Mobile: Static Optimized Graphic */
+                    <div style={{
                         position: "absolute",
-                        width: "700px",
-                        height: "700px",
-                        borderRadius: "40%", // Irregular shape
-                        background: "radial-gradient(circle at 30% 30%, rgba(40, 0, 80, 0.4), transparent 60%), radial-gradient(circle at 70% 70%, rgba(20, 0, 60, 0.4), transparent 60%)",
-                        filter: "blur(80px)",
-                    }}
-                />
-
-                {/* Rotating Nebula - Layer 2 (Deep Indigo/Black Swirl) */}
-                <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{
-                        duration: 80,
-                        repeat: Infinity,
-                        ease: "linear"
-                    }}
-                    style={{
-                        position: "absolute",
-                        width: "600px",
-                        height: "600px",
-                        borderRadius: "45%",
-                        background: "conic-gradient(from 0deg, transparent 0%, rgba(10, 5, 20, 0.1) 20%, rgba(0,0,0,0.4) 40%, transparent 60%, rgba(20, 0, 40, 0.2) 80%, transparent 100%)",
-                        filter: "blur(60px)",
-                    }}
-                />
-
-                {/* Galaxy Core (Singularity) - Pulsing */}
-                <motion.div
-                    animate={{
-                        scale: [1, 1.1, 1],
-                        opacity: [0.8, 1, 0.8],
-                    }}
-                    transition={{
-                        duration: 4,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                    style={{
-                        position: "absolute",
-                        width: "150px",
-                        height: "150px",
+                        width: "300px",
+                        height: "300px",
                         borderRadius: "50%",
-                        background: "radial-gradient(circle, #000000 0%, rgba(20, 0, 40, 0.8) 40%, transparent 80%)",
-                        filter: "blur(30px)", // Blurred core as requested
-                        zIndex: 2
-                    }}
-                />
+                        background: "radial-gradient(circle, rgba(20, 0, 80, 0.6) 0%, transparent 70%)",
+                        filter: "blur(40px)",
+                    }} />
+                ) : (
+                    /* Desktop: Complex Animated Nebula */
+                    <>
+                        {/* Rotating Nebula - Layer 1 (Dark Violet) */}
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{
+                                duration: 60,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                            style={{
+                                position: "absolute",
+                                width: "700px",
+                                height: "700px",
+                                borderRadius: "40%", // Irregular shape
+                                background: "radial-gradient(circle at 30% 30%, rgba(40, 0, 80, 0.4), transparent 60%), radial-gradient(circle at 70% 70%, rgba(20, 0, 60, 0.4), transparent 60%)",
+                                filter: "blur(80px)",
+                            }}
+                        />
+
+                        {/* Rotating Nebula - Layer 2 (Deep Indigo/Black Swirl) */}
+                        <motion.div
+                            animate={{ rotate: -360 }}
+                            transition={{
+                                duration: 80,
+                                repeat: Infinity,
+                                ease: "linear"
+                            }}
+                            style={{
+                                position: "absolute",
+                                width: "600px",
+                                height: "600px",
+                                borderRadius: "45%",
+                                background: "conic-gradient(from 0deg, transparent 0%, rgba(10, 5, 20, 0.1) 20%, rgba(0,0,0,0.4) 40%, transparent 60%, rgba(20, 0, 40, 0.2) 80%, transparent 100%)",
+                                filter: "blur(60px)",
+                            }}
+                        />
+
+                        {/* Galaxy Core (Singularity) - Pulsing */}
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.1, 1],
+                                opacity: [0.8, 1, 0.8],
+                            }}
+                            transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            style={{
+                                position: "absolute",
+                                width: "150px",
+                                height: "150px",
+                                borderRadius: "50%",
+                                background: "radial-gradient(circle, #000000 0%, rgba(20, 0, 40, 0.8) 40%, transparent 80%)",
+                                filter: "blur(30px)", // Blurred core as requested
+                                zIndex: 2
+                            }}
+                        />
+                    </>
+                )}
             </div>
 
             <canvas
