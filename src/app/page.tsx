@@ -1,66 +1,40 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Hero from "./components/sections/Hero";
+import StatsSection from "./components/sections/StatsSection";
+import FounderQuote from "./components/sections/FounderQuote";
+import WhyChooseUs from "./components/sections/WhyChooseUs";
+import DetailedServices from "./components/sections/DetailedServices";
+import Features from "./components/sections/Features";
+import Process from "./components/sections/Process";
+import SelectedWork from "./components/sections/SelectedWork";
+import Testimonials from "./components/sections/Testimonials";
+import FinalCTA from "./components/sections/FinalCTA";
+import dbConnect from "@/lib/db";
+import { Product, Stat, Testimonial } from "@/models/Content";
 
-export default function Home() {
+export default async function Home() {
+  await dbConnect();
+  const [productsRaw, statsRaw, testimonialsRaw] = await Promise.all([
+    Product.find({}).sort({ createdAt: -1 }).lean(),
+    Stat.find({}).sort({ createdAt: -1 }).lean(),
+    Testimonial.find({}).sort({ createdAt: -1 }).lean(),
+  ]);
+
+  const products = JSON.parse(JSON.stringify(productsRaw));
+  const stats = JSON.parse(JSON.stringify(statsRaw));
+  const testimonials = JSON.parse(JSON.stringify(testimonialsRaw));
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main style={{ background: "var(--token-bg-page)", minHeight: "100vh" }}>
+      <Hero />
+      <FounderQuote />
+      <WhyChooseUs />
+      <DetailedServices />
+      <Features />
+      <Process />
+      <SelectedWork projects={products} />
+      <StatsSection stats={stats} />
+      <Testimonials testimonials={testimonials} />
+      <FinalCTA />
+    </main>
   );
 }

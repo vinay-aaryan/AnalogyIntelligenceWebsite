@@ -1,27 +1,54 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Orbai Exact Tokens from HTML */
+  --token-bg-page: var(--token-4f00a517-d75a-4557-9433-caf4536a911d, #f5f5f5);
+  --token-bg-surface: #ffffff;
+  --token-fg-primary: #000000;
+  --token-fg-secondary: #666666; /* Standardized contrast */
+  
+  /* Glass & border tokens inferred from Orbai's "glass" classes */
+  --token-glass-border: rgba(255, 255, 255, 0.3);
+  --token-glass-bg: rgba(255, 255, 255, 0.4);
+  --token-glass-blur: 12px;
+  
+  /* Font Variables mapped from Next.js fonts */
+  --font-main: var(--font-main); /* Inter */
+  --font-heading: var(--font-heading); /* Plus Jakarta Sans */
+  
+  /* Semantic mappings */
+  --background: var(--token-bg-page);
+  --foreground: var(--token-fg-primary);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Orbai is effectively a light-mode-first design, enforcing light mode for now to match reference */
+    --background: var(--token-bg-page);
+    --foreground: var(--token-fg-primary);
   }
 }
 
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--foreground);
+  font-family: var(--font-main);
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--foreground);
+  font-weight: 700; /* Orbai typically uses bold headings */
+  letter-spacing: -0.02em;
+}
+
+p {
+  line-height: 1.6;
+  color: var(--token-fg-secondary);
 }
 
 * {
@@ -35,8 +62,100 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Utility: Orbai Glass Panel */
+.glass-panel {
+  background: var(--token-glass-bg);
+  backdrop-filter: blur(var(--token-glass-blur));
+  -webkit-backdrop-filter: blur(var(--token-glass-blur));
+  border: 1px solid var(--token-glass-border);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.04);
+}
+
+/* Utility: Orbai "Cement" Card */
+.cement-card {
+  background: #F3F3F3;
+  border-radius: 32px;
+  border: 1px solid #ffffff;
+  /* Stronger, sharper shadow for "cement" look */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Button Styles */
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-cement-primary {
+  background: #000000;
+  color: #ffffff;
+  padding: 16px 32px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.btn-cement-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.btn-cement-secondary {
+  background: #ffffff;
+  color: #000000;
+  padding: 16px 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.05); /* Subtle border for definition */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1); /* Cement shadow */
+}
+.btn-cement-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Utility: Cement Badge (Pill) */
+.cement-badge {
+  background: #ffffff;
+  border-radius: 100px;
+  padding: 12px 32px;
+  font-weight: 800;
+  color: #000000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* Thick, lifted shadow */
+  box-shadow: 0 12px 24px -6px rgba(0,0,0,0.15), 0 4px 8px -4px rgba(0,0,0,0.1); 
+  border: 1px solid #ffffff; /* Slight border to catch light */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 14px;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  gap: 32px;
+  animation: marquee 60s linear infinite;
+  will-change: transform;
+  /* Hardware acceleration hack */
+  transform: translateZ(0);
 }

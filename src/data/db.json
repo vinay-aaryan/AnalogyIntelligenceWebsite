@@ -1,0 +1,133 @@
+{
+    "products": [
+        {
+            "id": 1,
+            "title": "Autonomous FinTech Agent",
+            "category": "AI Engineering",
+            "desc": "A fully autonomous agent capable of executing complex financial trades with 99.9% uptime and emotionless execution.",
+            "tags": [
+                "Finance",
+                "Automation"
+            ],
+            "visualType": "FinTechVisual"
+        },
+        {
+            "id": 2,
+            "title": "LegalMind NLP Core",
+            "category": "Natural Language Processing",
+            "desc": "Enterprise-grade semantic search and document analysis engine designed for top-tier law firms.",
+            "tags": [
+                "Legal",
+                "Semantic Search"
+            ],
+            "visualType": "NLPVisual"
+        }
+    ],
+    "work": [
+        {
+            "id": 101,
+            "title": "Helio AI Assistant",
+            "category": "AI Tool",
+            "desc": "An intelligent autonomous agent that simplifies complex solar data analysis for everyday users.",
+            "videoColor": "linear-gradient(135deg, #1a1a1a 0%, #333 100%)",
+            "youtubeUrl": ""
+        },
+        {
+            "id": 102,
+            "title": "Aethered Space Tourism",
+            "category": "Web Platform",
+            "desc": "A seamless 3D booking experience for the next generation of space travelers.",
+            "videoColor": "linear-gradient(135deg, #000000 0%, #1e3c72 100%)"
+        },
+        {
+            "id": 103,
+            "title": "Project Chimera",
+            "category": "Motion Identity",
+            "desc": "A dynamic visual identity system for a stealth fintech startup, built on WebGL.",
+            "videoColor": "linear-gradient(135deg, #444 0%, #000 100%)"
+        },
+        {
+            "id": 104,
+            "title": "Standard Galactic",
+            "category": "Game UI",
+            "desc": "Immersive diegetic interfaces for a AAA sci-fi exploration game.",
+            "videoColor": "linear-gradient(135deg, #232526 0%, #414345 100%)"
+        }
+    ],
+    "team": [
+        {
+            "id": 1,
+            "name": "Vinay",
+            "role": "VP",
+            "bio": "Designing intelligent systems that simplify operations and drive real business impact.",
+            "image": "https://framerusercontent.com/images/8rS6PqQ59H0w6q0.jpg"
+        },
+        {
+            "id": 2,
+            "name": "Adarsh",
+            "role": "VP",
+            "bio": "Leading strategy to turn Analogy Intelligence into a scalable tech powerhouse.",
+            "image": null
+        }
+    ],
+    "testimonials": [
+        {
+            "id": 1,
+            "text": "Analogy transformed our operational efficiency overnight. The AI integration was seamless.",
+            "author": "Anshul",
+            "role": "CTO, Saras AI",
+            "visualUrl": "",
+            "layout": "standard"
+        },
+        {
+            "id": 2,
+            "text": "The team's understanding of complex LLM architectures is unmatched. Highly recommended.",
+            "author": "Prashanth Puri",
+            "role": "Founder, Orbit Analytics",
+            "visualUrl": "",
+            "layout": "standard"
+        }
+    ],
+    "trustedBy": [
+        {
+            "id": 1,
+            "name": "Core Shift Consultancy",
+            "logo": null
+        },
+        {
+            "id": 2,
+            "name": "Shree Balaji Events",
+            "logo": null
+        },
+        {
+            "id": 3,
+            "name": "Rudrakshgarh Resort",
+            "logo": null
+        },
+        {
+            "id": 4,
+            "name": "Sunil Online",
+            "logo": null
+        }
+    ],
+    "stats": [
+        {
+            "id": 1,
+            "label": "Companies",
+            "value": 12,
+            "suffix": "+"
+        },
+        {
+            "id": 2,
+            "label": "Projects",
+            "value": 85,
+            "suffix": "+"
+        },
+        {
+            "id": 3,
+            "label": "Hours Saved",
+            "value": 8000,
+            "suffix": "+"
+        }
+    ]
+}
