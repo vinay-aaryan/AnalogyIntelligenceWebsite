@@ -8,6 +8,11 @@ import { usePathname } from "next/navigation";
 
 export default function Footer() {
     const pathname = usePathname();
+    if (pathname?.startsWith("/admin")) return null;
+    return <FooterContent />;
+}
+
+function FooterContent() {
     const container = useRef(null);
     const { scrollYProgress } = useScroll({
         target: container,
@@ -16,8 +21,6 @@ export default function Footer() {
 
     // Parallax effect: Content moves slower than container
     const y = useTransform(scrollYProgress, [0, 1], [-200, 0]);
-
-    if (pathname?.startsWith("/admin")) return null;
 
     return (
         <footer ref={container} style={{ background: "#050505", color: "#ffffff", position: "relative", overflow: "hidden" }}>
