@@ -9,24 +9,30 @@ import SelectedWork from "./components/sections/SelectedWork";
 import Testimonials from "./components/sections/Testimonials";
 import FinalCTA from "./components/sections/FinalCTA";
 import dbConnect from "@/lib/db";
-import { Product, Stat, Testimonial } from "@/models/Content";
+import { Product, Stat, Testimonial, TeamMember, FounderInfo } from "@/models/Content";
 
 export default async function Home() {
   let products = [];
   let stats = [];
   let testimonials = [];
+  let team = [];
+  let founderInfo = [];
 
   try {
     await dbConnect();
-    const [productsRaw, statsRaw, testimonialsRaw] = await Promise.all([
+    const [productsRaw, statsRaw, testimonialsRaw, teamRaw, founderInfoRaw] = await Promise.all([
       Product.find({}).sort({ createdAt: -1 }).lean(),
       Stat.find({}).sort({ createdAt: -1 }).lean(),
       Testimonial.find({}).sort({ createdAt: -1 }).lean(),
+      TeamMember.find({}).sort({ createdAt: -1 }).lean(),
+      FounderInfo.find({}).sort({ createdAt: -1 }).lean(),
     ]);
 
     products = JSON.parse(JSON.stringify(productsRaw));
     stats = JSON.parse(JSON.stringify(statsRaw));
     testimonials = JSON.parse(JSON.stringify(testimonialsRaw));
+    team = JSON.parse(JSON.stringify(teamRaw));
+    founderInfo = JSON.parse(JSON.stringify(founderInfoRaw));
   } catch (error) {
     console.error("Database connection failed, using empty data:", error);
     // Fallback data is already empty arrays
@@ -35,7 +41,7 @@ export default async function Home() {
   return (
     <main style={{ background: "var(--token-bg-page)", minHeight: "100vh" }}>
       <Hero />
-      <FounderQuote />
+      <FounderQuote founder={founderInfo[0]} />
       <WhyChooseUs />
       <DetailedServices />
       <Features />

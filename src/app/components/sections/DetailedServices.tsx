@@ -88,7 +88,7 @@ const services = [
                             </motion.div>
                             <motion.div
                                 animate={{ opacity: [0, 1, 0] }}
-                                transition={{ duration: 0.5, repeat: Infinity }}
+                                transition={{ duration: 0.9, repeat: Infinity }}
                                 style={{ width: 8, height: 14, background: "#000", marginLeft: 4, flexShrink: 0 }}
                             />
                         </div>
@@ -250,7 +250,7 @@ const services = [
         title: "Voice Agents",
         desc: "Human-like voice AI interactions.",
         icon: <Mic size={28} color="#000" />,
-        span: "col-span-1",
+        span: "col-span-2",
         visual: (
             <div style={{ position: "relative", width: "100%", height: 180, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                 {[1, 2, 3, 4, 3, 2, 1].map((h, i) => (

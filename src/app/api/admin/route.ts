@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
-import { Product, Work, TeamMember, Testimonial, TrustedCompany, Stat } from '@/models/Content';
+import { Product, Work, TeamMember, Testimonial, TrustedCompany, Stat, FounderInfo } from '@/models/Content';
 
 // Helper to map collection name to Mongoose Model
 function getModel(collection: string) {
@@ -11,6 +11,7 @@ function getModel(collection: string) {
         case 'testimonials': return Testimonial;
         case 'trustedBy': return TrustedCompany;
         case 'stats': return Stat;
+        case 'founderInfo': return FounderInfo;
         default: return null;
     }
 }
@@ -18,13 +19,14 @@ function getModel(collection: string) {
 export async function GET() {
     await dbConnect();
     try {
-        const [products, work, team, testimonials, trustedBy, stats] = await Promise.all([
+        const [products, work, team, testimonials, trustedBy, stats, founderInfo] = await Promise.all([
             Product.find({}).sort({ createdAt: -1 }),
             Work.find({}).sort({ createdAt: -1 }),
             TeamMember.find({}).sort({ createdAt: -1 }),
             Testimonial.find({}).sort({ createdAt: -1 }),
             TrustedCompany.find({}).sort({ createdAt: -1 }),
             Stat.find({}).sort({ createdAt: -1 }),
+            FounderInfo.find({}).sort({ createdAt: -1 }),
         ]);
 
         const data = {
@@ -33,7 +35,8 @@ export async function GET() {
             team,
             testimonials,
             trustedBy,
-            stats
+            stats,
+            founderInfo
         };
         return NextResponse.json(data);
     } catch (error) {

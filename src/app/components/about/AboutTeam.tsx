@@ -31,12 +31,13 @@ export default function AboutTeam({ team }: { team: any[] }) {
                             }}
                         >
                             <div style={{
-                                width: 120, height: 120,
+                                width: 100, height: 100,
                                 borderRadius: "50%",
-                                background: "#ddd",
+                                background: "#ffffffff",
+                                boxShadow: "0 8px 18px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1)",
+                                border: "2px solid #fff",
                                 marginBottom: 24,
                                 overflow: "hidden",
-                                backgroundColor: "#f0f0f0",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -45,7 +46,7 @@ export default function AboutTeam({ team }: { team: any[] }) {
                                 color: "#ccc"
                             }}>
                                 {member.image ?
-                                    <img src={member.image} alt={member.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                    <img src={member.image} alt={member.name} style={{ width: "118%", height: "118%", objectFit: "contain" }} />
                                     : member.role}
                             </div>
 

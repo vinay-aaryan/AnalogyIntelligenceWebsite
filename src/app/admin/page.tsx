@@ -178,6 +178,7 @@ export default function AdminPage() {
         { id: "work", label: "Work", icon: <LayoutDashboard size={18} /> },
         { id: "stats", label: "Stats", icon: <BarChart3 size={18} /> },
         { id: "team", label: "Team", icon: <Users size={18} /> },
+        { id: "founderInfo", label: "Founder Info", icon: <UserCheck size={18} /> },
         { id: "testimonials", label: "Testimonials", icon: <MessageSquare size={18} /> },
         { id: "trustedBy", label: "Trusted By", icon: <Building2 size={18} /> },
 
@@ -383,6 +384,22 @@ export default function AdminPage() {
                                     <input placeholder="Manual Image URL" value={editingItem.image || ""} onChange={e => setEditingItem({ ...editingItem, image: e.target.value })} style={inputStyle} />
                                 </>
                             )}
+                            {activeTab === "founderInfo" && (
+                                <>
+                                    <div style={{ fontSize: 12, color: "#666", marginBottom: 16 }}>Manage the Founder Quote section here. Ensure only one item exists.</div>
+                                    <input placeholder="Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
+                                    <input placeholder="Role" value={editingItem.role || ""} onChange={e => setEditingItem({ ...editingItem, role: e.target.value })} style={inputStyle} />
+                                    <textarea placeholder="Quote (HTML supported)" value={editingItem.quote || ""} onChange={e => setEditingItem({ ...editingItem, quote: e.target.value })} style={{ ...inputStyle, height: 120, fontFamily: "monospace" }} />
+
+                                    <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
+                                        <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Profile Photo</label>
+                                        <input type="file" onChange={(e) => handleUpload(e, "image")} accept="image/*" style={{ fontSize: 12 }} />
+                                        {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
+                                        {editingItem.image && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.image}</div>}
+                                    </div>
+                                    <input placeholder="Manual Image URL" value={editingItem.image || ""} onChange={e => setEditingItem({ ...editingItem, image: e.target.value })} style={inputStyle} />
+                                </>
+                            )}
                             {activeTab === "testimonials" && (
                                 <>
                                     <select
@@ -498,7 +515,7 @@ export default function AdminPage() {
                             )}
 
                             {/* Generic fallback for unexpected tabs or 'work' */}
-                            {!["products", "work", "team", "testimonials", "trustedBy", "stats", "enquiries", "clients", "bookings"].includes(activeTab) && (
+                            {!["products", "work", "team", "testimonials", "trustedBy", "stats", "enquiries", "clients", "bookings", "founderInfo"].includes(activeTab) && (
                                 <textarea placeholder="Raw JSON Data" value={JSON.stringify(editingItem, null, 2)} onChange={e => {
                                     try { setEditingItem(JSON.parse(e.target.value)) } catch (err) { }
                                 }} style={{ ...inputStyle, height: 200, fontFamily: "monospace" }} />

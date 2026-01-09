@@ -60,7 +60,8 @@
             "name": "Vinay",
             "role": "VP",
             "bio": "Designing intelligent systems that simplify operations and drive real business impact.",
-            "image": "https://framerusercontent.com/images/8rS6PqQ59H0w6q0.jpg"
+            "image": "https://framerusercontent.com/images/8rS6PqQ59H0w6q0.jpg",
+            "quote": "Our focus isn’t just <span style='color: #000; fontWeight: 500'>building software</span>. It’s <span style='color: #000; fontWeight: 500'>understanding business problems deeply</span> and delivering solutions that <span style='color: #000; fontWeight: 500'>actually work</span> in the real world."
         },
         {
             "id": 2,
@@ -128,6 +129,15 @@
             "label": "Hours Saved",
             "value": 8000,
             "suffix": "+"
+        }
+    ],
+    "founderInfo": [
+        {
+            "id": 1,
+            "name": "Vinay",
+            "role": "VP",
+            "image": "https://framerusercontent.com/images/8rS6PqQ59H0w6q0.jpg",
+            "quote": "Our focus isn’t just <span style='color: #000; fontWeight: 500'>building software</span>. It’s <span style='color: #000; fontWeight: 500'>understanding business problems deeply</span> and delivering solutions that <span style='color: #000; fontWeight: 500'>actually work</span> in the real world."
         }
     ]
 }

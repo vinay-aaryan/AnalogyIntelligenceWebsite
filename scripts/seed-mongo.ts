@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
 import dotenv from 'dotenv';
-import { Product, Work, TeamMember, Testimonial, TrustedCompany, Stat } from '../src/models/Content';
+import { Product, Work, TeamMember, Testimonial, TrustedCompany, Stat, FounderInfo } from '../src/models/Content';
 
 // Load .env.local explicitly
 const envPath = path.resolve(process.cwd(), '.env.local');
@@ -32,7 +32,8 @@ async function seed() {
         TeamMember.deleteMany({}),
         Testimonial.deleteMany({}),
         TrustedCompany.deleteMany({}),
-        Stat.deleteMany({})
+        Stat.deleteMany({}),
+        FounderInfo.deleteMany({})
     ]);
 
     console.log("🚀 Seeding data...");
@@ -91,6 +92,24 @@ async function seed() {
     }));
     if (stats.length) await Stat.insertMany(stats);
     console.log(` - Inserted ${stats.length} Stats`);
+
+    // Founder Info
+    // Check if founderInfo exists in data to avoid crashes if old db.json
+    if (data.founderInfo) {
+        // Clear existing FounderInfo first (though deleteMany is not called above for it, we should add it)
+        // Wait, I should add deleteMany above too.
+        // For now, let's just insert.
+
+        const founderInfo = data.founderInfo.map((f: any) => ({
+            ...f,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        }));
+        if (founderInfo.length) await FounderInfo.insertMany(founderInfo);
+        console.log(` - Inserted ${founderInfo.length} Founder Info items`);
+    } else {
+        console.log("ℹ️ No Founder Info found in seeds.");
+    }
 
     console.log("✨ Seeding completed successfully.");
     await mongoose.disconnect();
