@@ -4,14 +4,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, Check, Loader2, PartyPopper } from "lucide-react";
 import confetti from 'canvas-confetti';
+import { useSearchParams } from "next/navigation";
 
 export default function Consultation() {
+    const searchParams = useSearchParams();
+    const demoRequested = searchParams.get('demo') === 'true';
+    const projectSlug = searchParams.get('project');
+    const [isDemoRequest, setIsDemoRequest] = useState(false);
+
     const [formState, setFormState] = useState({ name: "", email: "", company: "", message: "", phone: "", city: "", country: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedDate, setSelectedDate] = useState<number | null>(null);
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth()); // Simplified for demo
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+    useEffect(() => {
+        if (demoRequested) {
+            setIsDemoRequest(true);
+            if (projectSlug) {
+                setFormState(prev => ({ ...prev, message: `I'm interested in a demo of your ${projectSlug} project.\n\n` }));
+            }
+        }
+    }, [demoRequested, projectSlug]);
 
     const [showSuccess, setShowSuccess] = useState(false);
 
@@ -74,7 +89,7 @@ export default function Consultation() {
                     message: formState.message,
                     date: `${currentYear}-${currentMonth + 1}-${selectedDate}`,
                     time: selectedTime,
-                    type: 'consultation'
+                    type: isDemoRequest ? `Demo Request: ${projectSlug}` : 'consultation'
                 })
             });
 
@@ -543,9 +558,36 @@ export default function Consultation() {
                                         minHeight: 120,
                                         boxShadow: "0 4px 0 rgba(0,0,0,0.05)"
                                     }}
+                                    value={formState.message}
                                     onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                                 />
                             </div>
+
+                            {/* Demo Request Checkbox */}
+                            {demoRequested && projectSlug && (
+                                <div style={{
+                                    padding: "16px",
+                                    background: "#f0fdf4",
+                                    border: "1px solid #bbf7d0",
+                                    borderRadius: 12,
+                                    display: "flex",
+                                    gap: 12,
+                                    alignItems: "flex-start"
+                                }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={isDemoRequest}
+                                        onChange={(e) => setIsDemoRequest(e.target.checked)}
+                                        style={{ marginTop: 4, width: 16, height: 16, accentColor: "#16a34a" }}
+                                    />
+                                    <div>
+                                        <div style={{ fontSize: 14, fontWeight: 700, color: "#166534" }}> Request Demo for {projectSlug}</div>
+                                        <p style={{ fontSize: 13, color: "#15803d", lineHeight: 1.4 }}>
+                                            Check this box to confirm you want a specialized demo walk-through for this project during our call.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
 
                             <button
                                 type="submit"

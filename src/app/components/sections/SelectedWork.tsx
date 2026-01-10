@@ -113,123 +113,121 @@ function ProductCard({ project, i }: { project: any, i: number }) {
     const VisualComponent = Visuals[project.visualType] || Visuals.FinTechVisual;
 
     return (
-        <motion.div
-            initial={{ opacity: 0, x: i % 2 === 0 ? -100 : 100, scale: 0.9 }}
-            whileInView={{ opacity: 1, x: 0, scale: 1 }}
-            viewport={{ once: false, margin: "-50px", amount: 0.2 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="cement-card"
-        >
-            <div style={{
-                borderRadius: 24,
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                background: "#F3F3F3",
-                border: "1px solid rgba(0,0,0,0.05)",
-                position: "relative",
-                height: "100%"
-            }}>
-                {/* Visual Header */}
-                <div style={{ height: 320, width: "100%", position: "relative", borderBottom: "1px solid rgba(0,0,0,0.05)", background: "#fff", overflow: "hidden" }}>
-                    {hasVisual || hasYoutube ? (
-                        isYoutube ? (
-                            <iframe
-                                src={getYouTubeEmbedUrl(project.youtubeUrl || project.visualUrl)!}
-                                style={{ width: "100%", height: "100%", border: "none", pointerEvents: "auto" }}
-                                title={project.title}
-                                allow="autoplay; encrypted-media; picture-in-picture"
-                                allowFullScreen
-                            />
-                        ) : isVideo ? (
-                            <div style={{ width: "100%", height: "100%", position: "relative" }}>
-                                <video
-                                    ref={videoRef}
+        <Link href={`/work/${project.slug || '#'}`} style={{ display: "block", textDecoration: "none", height: "100%" }}>
+            <motion.div
+                initial={{ opacity: 0, x: i % 2 === 0 ? -100 : 100, scale: 0.9 }}
+                whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                viewport={{ once: false, margin: "-50px", amount: 0.2 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="cement-card"
+                style={{ height: "100%" }}
+            >
+                <div style={{
+                    borderRadius: 24,
+                    overflow: "hidden",
+                    display: "flex",
+                    flexDirection: "column",
+                    background: "#F3F3F3",
+                    border: "1px solid rgba(0,0,0,0.05)",
+                    position: "relative",
+                    height: "100%"
+                }}>
+                    {/* Visual Header */}
+                    <div style={{ height: 320, width: "100%", position: "relative", borderBottom: "1px solid rgba(0,0,0,0.05)", background: "#fff", overflow: "hidden" }}>
+                        {hasVisual || hasYoutube ? (
+                            isYoutube ? (
+                                <iframe
+                                    src={getYouTubeEmbedUrl(project.youtubeUrl || project.visualUrl)!}
+                                    style={{ width: "100%", height: "100%", border: "none", pointerEvents: "auto" }}
+                                    title={project.title}
+                                    allow="autoplay; encrypted-media; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            ) : isVideo ? (
+                                <div style={{ width: "100%", height: "100%", position: "relative" }}>
+                                    <video
+                                        ref={videoRef}
+                                        src={project.visualUrl}
+                                        autoPlay
+                                        loop
+                                        muted={isMuted}
+                                        playsInline
+                                        controls={false}
+                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    />
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            if (videoRef.current) {
+                                                videoRef.current.muted = !isMuted;
+                                                setIsMuted(!isMuted);
+                                            }
+                                        }}
+                                        style={{
+                                            position: "absolute", bottom: 16, right: 16,
+                                            width: 32, height: 32, borderRadius: "50%",
+                                            background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            border: "none", cursor: "pointer", zIndex: 10
+                                        }}
+                                    >
+                                        {isMuted ? (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" /></svg>
+                                        ) : (
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>
+                                        )}
+                                    </button>
+                                </div>
+                            ) : (
+                                <img
                                     src={project.visualUrl}
-                                    autoPlay
-                                    loop
-                                    muted={isMuted}
-                                    playsInline
-                                    controls={false} // Custom controls or native? User asked for audio toggle. Native controls have it.
-                                    // User asked: "enable option to on audio, by default make it mute."
-                                    // Native controls are easiest for now, but let's add a custom mute toggle button for style if native controls are hidden.
-                                    // Previously controls={true}. Let's keep native controls BUT also ensure we respect the "default mute".
-                                    // Actually, for "stunning" design, custom mute button is better.
+                                    alt={project.title}
                                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                 />
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        if (videoRef.current) {
-                                            videoRef.current.muted = !isMuted;
-                                            setIsMuted(!isMuted);
-                                        }
-                                    }}
-                                    style={{
-                                        position: "absolute", bottom: 16, right: 16,
-                                        width: 32, height: 32, borderRadius: "50%",
-                                        background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
-                                        display: "flex", alignItems: "center", justifyContent: "center",
-                                        border: "none", cursor: "pointer", zIndex: 10
-                                    }}
-                                >
-                                    {isMuted ? (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" /></svg>
-                                    ) : (
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>
-                                    )}
-                                </button>
-                            </div>
+                            )
                         ) : (
-                            <img
-                                src={project.visualUrl}
-                                alt={project.title}
-                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                            />
-                        )
-                    ) : (
-                        <VisualComponent />
-                    )}
-                </div>
-
-                {/* Content Body */}
-                <div style={{ padding: 40, display: "flex", flexDirection: "column", gap: 16, flex: 1, background: "#F3F3F3" }}>
-                    {/* Tags */}
-                    {/* Tags */}
-                    {(() => {
-                        const tags = typeof project.tags === 'string'
-                            ? project.tags.split(',').filter(Boolean)
-                            : Array.isArray(project.tags) ? project.tags : [];
-
-                        if (tags.length === 0) return null;
-
-                        return (
-                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
-                                {tags.map((tag: string) => (
-                                    <div key={tag} style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", background: "#e5e5e5", borderRadius: 100, color: "#666" }}>
-                                        {tag.trim()}
-                                    </div>
-                                ))}
-                            </div>
-                        )
-                    })()}
-
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                        <h3 style={{ fontSize: 24, fontWeight: 700, color: "var(--foreground)", fontFamily: "var(--font-heading)", maxWidth: "80%" }}>
-                            {project.title}
-                        </h3>
-                        <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(0,0,0,0.05)" }}>
-                            <ArrowUpRight size={20} color="#000" />
-                        </div>
+                            <VisualComponent />
+                        )}
                     </div>
 
-                    <p style={{ color: "var(--token-fg-secondary)", fontSize: 16, lineHeight: 1.6 }}>
-                        {project.desc}
-                    </p>
+                    {/* Content Body */}
+                    <div style={{ padding: 40, display: "flex", flexDirection: "column", gap: 16, flex: 1, background: "#F3F3F3" }}>
+                        {/* Tags */}
+                        {(() => {
+                            const tags = typeof project.tags === 'string'
+                                ? project.tags.split(',').filter(Boolean)
+                                : Array.isArray(project.tags) ? project.tags : [];
+
+                            if (tags.length === 0) return null;
+
+                            return (
+                                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+                                    {tags.map((tag: string) => (
+                                        <div key={tag} style={{ fontSize: 12, fontWeight: 700, padding: "4px 12px", background: "#e5e5e5", borderRadius: 100, color: "#666" }}>
+                                            {tag.trim()}
+                                        </div>
+                                    ))}
+                                </div>
+                            )
+                        })()}
+
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <h3 style={{ fontSize: 24, fontWeight: 700, color: "var(--foreground)", fontFamily: "var(--font-heading)", maxWidth: "80%" }}>
+                                {project.title}
+                            </h3>
+                            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(0,0,0,0.05)" }}>
+                                <ArrowUpRight size={20} color="#000" />
+                            </div>
+                        </div>
+
+                        <p style={{ color: "var(--token-fg-secondary)", fontSize: 16, lineHeight: 1.6 }}>
+                            {project.desc}
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </motion.div>
+            </motion.div>
+        </Link>
     );
 }
 

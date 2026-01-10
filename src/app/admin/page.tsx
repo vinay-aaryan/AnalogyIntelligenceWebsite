@@ -5,6 +5,14 @@ import Link from "next/link";
 import { Plus, Trash2, Edit2, Save, X, LayoutDashboard, Users, MessageSquare, Briefcase, Building2, Upload, BarChart3, Mail, Calendar, UserCheck, Download } from "lucide-react";
 import * as XLSX from 'xlsx';
 
+const inputStyle = {
+    padding: "12px",
+    borderRadius: 8,
+    border: "1px solid #ddd",
+    fontSize: 14,
+    width: "100%"
+};
+
 export default function AdminPage() {
     const [data, setData] = useState<any>(null);
     const [extraData, setExtraData] = useState<any>({});
@@ -54,7 +62,6 @@ export default function AdminPage() {
         const collection = activeTab;
 
         if (["clients", "enquiries", "bookings"].includes(collection)) {
-            // Handle new API save
             const method = isCreating ? "POST" : "PUT";
             const res = await fetch(`/api/${collection}`, {
                 method,
@@ -78,6 +85,12 @@ export default function AdminPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ collection, action, item, id: item.id || item._id })
         });
+
+        if (!res.ok) {
+            console.error("Save failed:", await res.text());
+            alert("Failed to save item.");
+            return;
+        }
 
         const newData = await res.json();
         setData(newData);
@@ -290,253 +303,286 @@ export default function AdminPage() {
 
             {/* Edit Modal */}
             {(editingItem || isCreating) && (
-                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
-                    <div style={{ background: "#fff", padding: 32, borderRadius: 16, width: 500, maxWidth: "90%", maxHeight: "90vh", overflowY: "auto" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
-                            <h3 style={{ fontSize: 20, fontWeight: 700 }}>{isCreating ? "Create Item" : "Edit Item"}</h3>
-                            <button onClick={() => { setEditingItem(null); setIsCreating(false); }} style={{ border: "none", background: "transparent", cursor: "pointer" }}><X size={20} /></button>
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+                    <div style={{ minHeight: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 20px" }}>
+                        <div style={{ background: "#fff", padding: 32, borderRadius: 16, width: 600, maxWidth: "100%", boxShadow: "0 20px 50px rgba(0,0,0,0.2)" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
+                                <h3 style={{ fontSize: 20, fontWeight: 700 }}>{isCreating ? "Create Item" : "Edit Item"}</h3>
+                                <button type="button" onClick={() => { setEditingItem(null); setIsCreating(false); }} style={{ border: "none", background: "transparent", cursor: "pointer" }}><X size={20} /></button>
+                            </div>
+
+                            <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                                {/* Dynamic Filters based on Active Tab Schema */}
+                                {activeTab === "products" && (
+                                    <>
+                                        <input placeholder="Title" value={editingItem.title || ""} onChange={e => setEditingItem({ ...editingItem, title: e.target.value })} style={inputStyle} required />
+                                        <input placeholder="Category" value={editingItem.category || ""} onChange={e => setEditingItem({ ...editingItem, category: e.target.value })} style={inputStyle} />
+                                        <textarea placeholder="Description" value={editingItem.desc || ""} onChange={e => setEditingItem({ ...editingItem, desc: e.target.value })} style={{ ...inputStyle, height: 100 }} />
+
+                                        <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
+                                            <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Visual (Image/Video)</label>
+                                            <input type="file" onChange={(e) => handleUpload(e, "visualUrl")} accept="image/*,video/*" style={{ fontSize: 12 }} />
+                                            {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
+                                            {editingItem.visualUrl && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.visualUrl}</div>}
+                                        </div>
+                                        <input placeholder="Manual Visual URL (for direct files)" value={editingItem.visualUrl || ""} onChange={e => setEditingItem({ ...editingItem, visualUrl: e.target.value })} style={inputStyle} />
+
+                                        <div style={{ padding: 16, background: "#f9f9f9", borderRadius: 8, border: "1px solid #eee" }}>
+                                            <label style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                                                <span style={{ color: "red" }}>▶</span> YouTube Link
+                                            </label>
+                                            <input
+                                                placeholder="Paste YouTube Link (Video or Short)"
+                                                value={editingItem.youtubeUrl || ""}
+                                                onChange={e => setEditingItem({ ...editingItem, youtubeUrl: e.target.value })}
+                                                style={inputStyle}
+                                            />
+                                            <p style={{ fontSize: 11, color: "#666", marginTop: 4 }}>
+                                                If provided, this will override the uploaded visual. Supports Shorts and standard videos.
+                                            </p>
+                                        </div>
+
+                                        <input placeholder="Tags (comma separated)" value={Array.isArray(editingItem.tags) ? editingItem.tags.join(",") : (editingItem.tags || "")} onChange={e => setEditingItem({ ...editingItem, tags: e.target.value })} style={inputStyle} />
+                                    </>
+                                )}
+                                {activeTab === "work" && (
+                                    <>
+                                        <input placeholder="Title" value={editingItem.title || ""} onChange={e => setEditingItem({ ...editingItem, title: e.target.value })} style={inputStyle} required />
+                                        <input placeholder="Category" value={editingItem.category || ""} onChange={e => setEditingItem({ ...editingItem, category: e.target.value })} style={inputStyle} />
+                                        <textarea placeholder="Description" value={editingItem.desc || ""} onChange={e => setEditingItem({ ...editingItem, desc: e.target.value })} style={{ ...inputStyle, height: 100 }} />
+
+                                        <div style={{ marginBottom: 16 }}>
+                                            <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={editingItem.featured || false}
+                                                    onChange={e => setEditingItem({ ...editingItem, featured: e.target.checked })}
+                                                />
+                                                Featured on Landing Page
+                                            </label>
+                                        </div>
+
+                                        <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
+                                            <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Video/Cover</label>
+                                            <input type="file" onChange={(e) => handleUpload(e, "visualUrl")} accept="image/*,video/*" style={{ fontSize: 12 }} />
+                                            {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
+                                            {editingItem.visualUrl && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.visualUrl}</div>}
+                                        </div>
+
+                                        <div style={{ padding: 16, background: "#f9f9f9", borderRadius: 8, border: "1px solid #eee" }}>
+                                            <label style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                                                <span style={{ color: "red" }}>▶</span> YouTube Link
+                                            </label>
+                                            <input
+                                                placeholder="Paste YouTube Link (Video or Short)"
+                                                value={editingItem.youtubeUrl || ""}
+                                                onChange={e => setEditingItem({ ...editingItem, youtubeUrl: e.target.value })}
+                                                style={inputStyle}
+                                            />
+                                            <p style={{ fontSize: 11, color: "#666", marginTop: 4 }}>
+                                                Overrides uploaded visual.
+                                            </p>
+                                        </div>
+
+                                        <input placeholder="Video Color Gradient (CSS)" value={editingItem.videoColor || ""} onChange={e => setEditingItem({ ...editingItem, videoColor: e.target.value })} style={inputStyle} />
+
+                                        <div style={{ marginTop: 16, borderTop: "1px solid #eee", paddingTop: 16 }}>
+                                            <label style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, display: "block" }}>Project Details Page Content</label>
+
+                                            <input
+                                                placeholder="Slug (e.g. ai-financial-planning) - Auto-generated if empty"
+                                                value={editingItem.slug || ""}
+                                                onChange={e => setEditingItem({ ...editingItem, slug: e.target.value })}
+                                                style={{ ...inputStyle, marginBottom: 8 }}
+                                            />
+
+                                            <textarea placeholder="The Challenge" value={editingItem.challenge || ""} onChange={e => setEditingItem({ ...editingItem, challenge: e.target.value })} style={{ ...inputStyle, height: 80, marginBottom: 8 }} />
+                                            <textarea placeholder="The Solution" value={editingItem.solution || ""} onChange={e => setEditingItem({ ...editingItem, solution: e.target.value })} style={{ ...inputStyle, height: 80, marginBottom: 8 }} />
+                                            <textarea placeholder="The Results" value={editingItem.results || ""} onChange={e => setEditingItem({ ...editingItem, results: e.target.value })} style={{ ...inputStyle, height: 80, marginBottom: 8 }} />
+
+                                            <input
+                                                placeholder="Features (comma separated)"
+                                                value={Array.isArray(editingItem.features) ? editingItem.features.join(",") : (editingItem.features || "")}
+                                                onChange={e => setEditingItem({ ...editingItem, features: e.target.value.split(",") })}
+                                                style={{ ...inputStyle, marginBottom: 8 }}
+                                            />
+
+                                            <input
+                                                placeholder="Tech Stack (comma separated)"
+                                                value={editingItem.techStack || ""}
+                                                onChange={e => setEditingItem({ ...editingItem, techStack: e.target.value })}
+                                                style={inputStyle}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+                                {activeTab === "stats" && (
+                                    <>
+                                        <input placeholder="Label (e.g. Projects)" value={editingItem.label || ""} onChange={e => setEditingItem({ ...editingItem, label: e.target.value })} style={inputStyle} required />
+                                        <input type="number" placeholder="Value (e.g. 85)" value={editingItem.value || ""} onChange={e => setEditingItem({ ...editingItem, value: Number(e.target.value) })} style={inputStyle} required />
+                                        <input placeholder="Suffix (e.g. + or M+)" value={editingItem.suffix || ""} onChange={e => setEditingItem({ ...editingItem, suffix: e.target.value })} style={inputStyle} />
+                                    </>
+                                )}
+                                {activeTab === "team" && (
+                                    <>
+                                        <input placeholder="Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
+                                        <input placeholder="Role" value={editingItem.role || ""} onChange={e => setEditingItem({ ...editingItem, role: e.target.value })} style={inputStyle} />
+                                        <textarea placeholder="Bio" value={editingItem.bio || ""} onChange={e => setEditingItem({ ...editingItem, bio: e.target.value })} style={{ ...inputStyle, height: 100 }} />
+
+                                        <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
+                                            <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Profile Photo</label>
+                                            <input type="file" onChange={(e) => handleUpload(e, "image")} accept="image/*" style={{ fontSize: 12 }} />
+                                            {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
+                                            {editingItem.image && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.image}</div>}
+                                        </div>
+                                        <input placeholder="Manual Image URL" value={editingItem.image || ""} onChange={e => setEditingItem({ ...editingItem, image: e.target.value })} style={inputStyle} />
+                                    </>
+                                )}
+                                {activeTab === "founderInfo" && (
+                                    <>
+                                        <div style={{ fontSize: 12, color: "#666", marginBottom: 16 }}>Manage the Founder Quote section here. Ensure only one item exists.</div>
+                                        <input placeholder="Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
+                                        <input placeholder="Role" value={editingItem.role || ""} onChange={e => setEditingItem({ ...editingItem, role: e.target.value })} style={inputStyle} />
+                                        <textarea placeholder="Quote (HTML supported)" value={editingItem.quote || ""} onChange={e => setEditingItem({ ...editingItem, quote: e.target.value })} style={{ ...inputStyle, height: 120, fontFamily: "monospace" }} />
+
+                                        <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
+                                            <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Profile Photo</label>
+                                            <input type="file" onChange={(e) => handleUpload(e, "image")} accept="image/*" style={{ fontSize: 12 }} />
+                                            {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
+                                            {editingItem.image && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.image}</div>}
+                                        </div>
+                                        <input placeholder="Manual Image URL" value={editingItem.image || ""} onChange={e => setEditingItem({ ...editingItem, image: e.target.value })} style={inputStyle} />
+                                    </>
+                                )}
+                                {activeTab === "testimonials" && (
+                                    <>
+                                        <select
+                                            value={editingItem.layout || "standard"}
+                                            onChange={e => setEditingItem({ ...editingItem, layout: e.target.value })}
+                                            style={inputStyle}
+                                        >
+                                            <option value="standard">Standard (1x1)</option>
+                                            <option value="wide">Wide (2x1) - Best for Video</option>
+                                            <option value="tall">Tall (1x2)</option>
+                                            <option value="big">Big (2x2)</option>
+                                        </select>
+
+                                        <textarea placeholder="Review Text" value={editingItem.text || ""} onChange={e => setEditingItem({ ...editingItem, text: e.target.value })} style={{ ...inputStyle, height: 100 }} required />
+
+                                        <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
+                                            <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Photo / Video</label>
+                                            <input type="file" onChange={(e) => handleUpload(e, "visualUrl")} accept="image/*,video/*" style={{ fontSize: 12 }} />
+                                            {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
+                                            {editingItem.visualUrl && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.visualUrl}</div>}
+                                        </div>
+                                        <input placeholder="Manual Visual URL" value={editingItem.visualUrl || ""} onChange={e => setEditingItem({ ...editingItem, visualUrl: e.target.value })} style={inputStyle} />
+
+                                        <input placeholder="Author Name" value={editingItem.author || ""} onChange={e => setEditingItem({ ...editingItem, author: e.target.value })} style={inputStyle} />
+                                        <input placeholder="Role / Company" value={editingItem.role || ""} onChange={e => setEditingItem({ ...editingItem, role: e.target.value })} style={inputStyle} />
+                                    </>
+                                )}
+                                {activeTab === "trustedBy" && (
+                                    <>
+                                        <input placeholder="Company Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
+                                        <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
+                                            <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Logo</label>
+                                            <input type="file" onChange={(e) => handleUpload(e, "logo")} accept="image/*" style={{ fontSize: 12 }} />
+                                            {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
+                                            {editingItem.logo && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.logo}</div>}
+                                        </div>
+                                        <input placeholder="Manual Logo URL" value={editingItem.logo || ""} onChange={e => setEditingItem({ ...editingItem, logo: e.target.value })} style={inputStyle} />
+                                    </>
+                                )}
+                                {activeTab === "clients" && (
+                                    <>
+                                        <input placeholder="Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
+                                        <input placeholder="Email" value={editingItem.email || ""} onChange={e => setEditingItem({ ...editingItem, email: e.target.value })} style={inputStyle} required />
+                                        <input placeholder="Company" value={editingItem.company || ""} onChange={e => setEditingItem({ ...editingItem, company: e.target.value })} style={inputStyle} />
+                                        <input placeholder="Phone" value={editingItem.phone || ""} onChange={e => setEditingItem({ ...editingItem, phone: e.target.value })} style={inputStyle} />
+                                        <select
+                                            value={editingItem.status || "prospect"}
+                                            onChange={e => setEditingItem({ ...editingItem, status: e.target.value })}
+                                            style={inputStyle}
+                                        >
+                                            <option value="prospect">Prospect</option>
+                                            <option value="active">Active</option>
+                                            <option value="churned">Churned</option>
+                                        </select>
+                                        <textarea placeholder="Notes" value={editingItem.notes || ""} onChange={e => setEditingItem({ ...editingItem, notes: e.target.value })} style={{ ...inputStyle, height: 100 }} />
+                                    </>
+                                )}
+                                {activeTab === "enquiries" && (
+                                    <>
+                                        <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>Enquiries are read-only except for status</div>
+                                        <input disabled value={editingItem.name || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        <input disabled value={editingItem.email || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        <input disabled value={editingItem.subject || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        <textarea disabled value={editingItem.message || ""} style={{ ...inputStyle, height: 100, background: '#f0f0f0' }} />
+                                        <label style={{ fontSize: 12, fontWeight: 700 }}>Status</label>
+                                        <select
+                                            value={editingItem.status || "new"}
+                                            onChange={e => setEditingItem({ ...editingItem, status: e.target.value })}
+                                            style={inputStyle}
+                                        >
+                                            <option value="new">New</option>
+                                            <option value="read">Read</option>
+                                            <option value="archived">Archived</option>
+                                        </select>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                            <input disabled value={editingItem.phone || ""} placeholder="Phone" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.service || ""} placeholder="Service" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.city || ""} placeholder="City" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.country || ""} placeholder="Country" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        </div>
+                                    </>
+                                )}
+                                {activeTab === "bookings" && (
+                                    <>
+                                        <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>Bookings are read-only</div>
+                                        <label style={{ fontSize: 12, fontWeight: 700 }}>Client</label>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                            <input disabled value={editingItem.clientName || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.clientEmail || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        </div>
+
+                                        <label style={{ fontSize: 12, fontWeight: 700 }}>Scheduled For</label>
+                                        <div style={{ display: 'flex', gap: 16 }}>
+                                            <input disabled value={editingItem.date || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.time || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        </div>
+
+                                        <label style={{ fontSize: 12, fontWeight: 700 }}>Type & Link</label>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                            <input disabled value={editingItem.type || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.link || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        </div>
+
+                                        <label style={{ fontSize: 12, fontWeight: 700 }}>Details</label>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                            <input disabled value={editingItem.phone || ""} placeholder="Phone" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.company || ""} placeholder="Company" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.city || ""} placeholder="City" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                            <input disabled value={editingItem.country || ""} placeholder="Country" style={{ ...inputStyle, background: '#f0f0f0' }} />
+                                        </div>
+                                        <textarea disabled value={editingItem.message || ""} style={{ ...inputStyle, height: 100, background: '#f0f0f0' }} />
+                                    </>
+                                )}
+
+                                {/* Generic fallback for unexpected tabs or 'work' */}
+                                {!["products", "work", "team", "testimonials", "trustedBy", "stats", "enquiries", "clients", "bookings", "founderInfo"].includes(activeTab) && (
+                                    <textarea placeholder="Raw JSON Data" value={JSON.stringify(editingItem, null, 2)} onChange={e => {
+                                        try { setEditingItem(JSON.parse(e.target.value)) } catch (err) { }
+                                    }} style={{ ...inputStyle, height: 200, fontFamily: "monospace" }} />
+                                )}
+
+                                <button type="submit" style={{ marginTop: 16, background: "#000", color: "#fff", padding: "12px", borderRadius: 8, border: "none", fontWeight: 600, cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: 8 }}>
+                                    <Save size={16} /> Save Changes
+                                </button>
+                            </form>
                         </div>
-
-                        <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                            {/* Dynamic Filters based on Active Tab Schema */}
-                            {activeTab === "products" && (
-                                <>
-                                    <input placeholder="Title" value={editingItem.title || ""} onChange={e => setEditingItem({ ...editingItem, title: e.target.value })} style={inputStyle} required />
-                                    <input placeholder="Category" value={editingItem.category || ""} onChange={e => setEditingItem({ ...editingItem, category: e.target.value })} style={inputStyle} />
-                                    <textarea placeholder="Description" value={editingItem.desc || ""} onChange={e => setEditingItem({ ...editingItem, desc: e.target.value })} style={{ ...inputStyle, height: 100 }} />
-
-                                    <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
-                                        <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Visual (Image/Video)</label>
-                                        <input type="file" onChange={(e) => handleUpload(e, "visualUrl")} accept="image/*,video/*" style={{ fontSize: 12 }} />
-                                        {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
-                                        {editingItem.visualUrl && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.visualUrl}</div>}
-                                    </div>
-                                    <input placeholder="Manual Visual URL (for direct files)" value={editingItem.visualUrl || ""} onChange={e => setEditingItem({ ...editingItem, visualUrl: e.target.value })} style={inputStyle} />
-
-                                    <div style={{ padding: 16, background: "#f9f9f9", borderRadius: 8, border: "1px solid #eee" }}>
-                                        <label style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
-                                            <span style={{ color: "red" }}>▶</span> YouTube Link
-                                        </label>
-                                        <input
-                                            placeholder="Paste YouTube Link (Video or Short)"
-                                            value={editingItem.youtubeUrl || ""}
-                                            onChange={e => setEditingItem({ ...editingItem, youtubeUrl: e.target.value })}
-                                            style={inputStyle}
-                                        />
-                                        <p style={{ fontSize: 11, color: "#666", marginTop: 4 }}>
-                                            If provided, this will override the uploaded visual. Supports Shorts and standard videos.
-                                        </p>
-                                    </div>
-
-                                    <input placeholder="Tags (comma separated)" value={Array.isArray(editingItem.tags) ? editingItem.tags.join(",") : (editingItem.tags || "")} onChange={e => setEditingItem({ ...editingItem, tags: e.target.value })} style={inputStyle} />
-                                </>
-                            )}
-                            {activeTab === "work" && (
-                                <>
-                                    <input placeholder="Title" value={editingItem.title || ""} onChange={e => setEditingItem({ ...editingItem, title: e.target.value })} style={inputStyle} required />
-                                    <input placeholder="Category" value={editingItem.category || ""} onChange={e => setEditingItem({ ...editingItem, category: e.target.value })} style={inputStyle} />
-                                    <textarea placeholder="Description" value={editingItem.desc || ""} onChange={e => setEditingItem({ ...editingItem, desc: e.target.value })} style={{ ...inputStyle, height: 100 }} />
-
-                                    <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
-                                        <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Video/Cover</label>
-                                        <input type="file" onChange={(e) => handleUpload(e, "visualUrl")} accept="image/*,video/*" style={{ fontSize: 12 }} />
-                                        {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
-                                        {editingItem.visualUrl && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.visualUrl}</div>}
-                                    </div>
-
-                                    <div style={{ padding: 16, background: "#f9f9f9", borderRadius: 8, border: "1px solid #eee" }}>
-                                        <label style={{ marginBottom: 8, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
-                                            <span style={{ color: "red" }}>▶</span> YouTube Link
-                                        </label>
-                                        <input
-                                            placeholder="Paste YouTube Link (Video or Short)"
-                                            value={editingItem.youtubeUrl || ""}
-                                            onChange={e => setEditingItem({ ...editingItem, youtubeUrl: e.target.value })}
-                                            style={inputStyle}
-                                        />
-                                        <p style={{ fontSize: 11, color: "#666", marginTop: 4 }}>
-                                            Overrides uploaded visual.
-                                        </p>
-                                    </div>
-
-                                    <input placeholder="Video Color Gradient (CSS)" value={editingItem.videoColor || ""} onChange={e => setEditingItem({ ...editingItem, videoColor: e.target.value })} style={inputStyle} />
-                                </>
-                            )}
-                            {activeTab === "stats" && (
-                                <>
-                                    <input placeholder="Label (e.g. Projects)" value={editingItem.label || ""} onChange={e => setEditingItem({ ...editingItem, label: e.target.value })} style={inputStyle} required />
-                                    <input type="number" placeholder="Value (e.g. 85)" value={editingItem.value || ""} onChange={e => setEditingItem({ ...editingItem, value: Number(e.target.value) })} style={inputStyle} required />
-                                    <input placeholder="Suffix (e.g. + or M+)" value={editingItem.suffix || ""} onChange={e => setEditingItem({ ...editingItem, suffix: e.target.value })} style={inputStyle} />
-                                </>
-                            )}
-                            {activeTab === "team" && (
-                                <>
-                                    <input placeholder="Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
-                                    <input placeholder="Role" value={editingItem.role || ""} onChange={e => setEditingItem({ ...editingItem, role: e.target.value })} style={inputStyle} />
-                                    <textarea placeholder="Bio" value={editingItem.bio || ""} onChange={e => setEditingItem({ ...editingItem, bio: e.target.value })} style={{ ...inputStyle, height: 100 }} />
-
-                                    <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
-                                        <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Profile Photo</label>
-                                        <input type="file" onChange={(e) => handleUpload(e, "image")} accept="image/*" style={{ fontSize: 12 }} />
-                                        {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
-                                        {editingItem.image && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.image}</div>}
-                                    </div>
-                                    <input placeholder="Manual Image URL" value={editingItem.image || ""} onChange={e => setEditingItem({ ...editingItem, image: e.target.value })} style={inputStyle} />
-                                </>
-                            )}
-                            {activeTab === "founderInfo" && (
-                                <>
-                                    <div style={{ fontSize: 12, color: "#666", marginBottom: 16 }}>Manage the Founder Quote section here. Ensure only one item exists.</div>
-                                    <input placeholder="Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
-                                    <input placeholder="Role" value={editingItem.role || ""} onChange={e => setEditingItem({ ...editingItem, role: e.target.value })} style={inputStyle} />
-                                    <textarea placeholder="Quote (HTML supported)" value={editingItem.quote || ""} onChange={e => setEditingItem({ ...editingItem, quote: e.target.value })} style={{ ...inputStyle, height: 120, fontFamily: "monospace" }} />
-
-                                    <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
-                                        <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Profile Photo</label>
-                                        <input type="file" onChange={(e) => handleUpload(e, "image")} accept="image/*" style={{ fontSize: 12 }} />
-                                        {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
-                                        {editingItem.image && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.image}</div>}
-                                    </div>
-                                    <input placeholder="Manual Image URL" value={editingItem.image || ""} onChange={e => setEditingItem({ ...editingItem, image: e.target.value })} style={inputStyle} />
-                                </>
-                            )}
-                            {activeTab === "testimonials" && (
-                                <>
-                                    <select
-                                        value={editingItem.layout || "standard"}
-                                        onChange={e => setEditingItem({ ...editingItem, layout: e.target.value })}
-                                        style={inputStyle}
-                                    >
-                                        <option value="standard">Standard (1x1)</option>
-                                        <option value="wide">Wide (2x1) - Best for Video</option>
-                                        <option value="tall">Tall (1x2)</option>
-                                        <option value="big">Big (2x2)</option>
-                                    </select>
-
-                                    <textarea placeholder="Review Text" value={editingItem.text || ""} onChange={e => setEditingItem({ ...editingItem, text: e.target.value })} style={{ ...inputStyle, height: 100 }} required />
-
-                                    <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
-                                        <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Photo / Video</label>
-                                        <input type="file" onChange={(e) => handleUpload(e, "visualUrl")} accept="image/*,video/*" style={{ fontSize: 12 }} />
-                                        {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
-                                        {editingItem.visualUrl && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.visualUrl}</div>}
-                                    </div>
-                                    <input placeholder="Manual Visual URL" value={editingItem.visualUrl || ""} onChange={e => setEditingItem({ ...editingItem, visualUrl: e.target.value })} style={inputStyle} />
-
-                                    <input placeholder="Author Name" value={editingItem.author || ""} onChange={e => setEditingItem({ ...editingItem, author: e.target.value })} style={inputStyle} />
-                                    <input placeholder="Role / Company" value={editingItem.role || ""} onChange={e => setEditingItem({ ...editingItem, role: e.target.value })} style={inputStyle} />
-                                </>
-                            )}
-                            {activeTab === "trustedBy" && (
-                                <>
-                                    <input placeholder="Company Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
-                                    <div style={{ border: "1px dashed #ccc", padding: 16, borderRadius: 8 }}>
-                                        <label style={{ display: "block", marginBottom: 8, fontSize: 12, fontWeight: 700 }}>Upload Logo</label>
-                                        <input type="file" onChange={(e) => handleUpload(e, "logo")} accept="image/*" style={{ fontSize: 12 }} />
-                                        {uploading && <div style={{ color: "blue", fontSize: 12, marginTop: 4 }}>Uploading...</div>}
-                                        {editingItem.logo && <div style={{ color: "green", fontSize: 12, marginTop: 4 }}>File: {editingItem.logo}</div>}
-                                    </div>
-                                    <input placeholder="Manual Logo URL" value={editingItem.logo || ""} onChange={e => setEditingItem({ ...editingItem, logo: e.target.value })} style={inputStyle} />
-                                </>
-                            )}
-                            {activeTab === "clients" && (
-                                <>
-                                    <input placeholder="Name" value={editingItem.name || ""} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} style={inputStyle} required />
-                                    <input placeholder="Email" value={editingItem.email || ""} onChange={e => setEditingItem({ ...editingItem, email: e.target.value })} style={inputStyle} required />
-                                    <input placeholder="Company" value={editingItem.company || ""} onChange={e => setEditingItem({ ...editingItem, company: e.target.value })} style={inputStyle} />
-                                    <input placeholder="Phone" value={editingItem.phone || ""} onChange={e => setEditingItem({ ...editingItem, phone: e.target.value })} style={inputStyle} />
-                                    <select
-                                        value={editingItem.status || "prospect"}
-                                        onChange={e => setEditingItem({ ...editingItem, status: e.target.value })}
-                                        style={inputStyle}
-                                    >
-                                        <option value="prospect">Prospect</option>
-                                        <option value="active">Active</option>
-                                        <option value="churned">Churned</option>
-                                    </select>
-                                    <textarea placeholder="Notes" value={editingItem.notes || ""} onChange={e => setEditingItem({ ...editingItem, notes: e.target.value })} style={{ ...inputStyle, height: 100 }} />
-                                </>
-                            )}
-                            {activeTab === "enquiries" && (
-                                <>
-                                    <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>Enquiries are read-only except for status</div>
-                                    <input disabled value={editingItem.name || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    <input disabled value={editingItem.email || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    <input disabled value={editingItem.subject || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    <textarea disabled value={editingItem.message || ""} style={{ ...inputStyle, height: 100, background: '#f0f0f0' }} />
-                                    <label style={{ fontSize: 12, fontWeight: 700 }}>Status</label>
-                                    <select
-                                        value={editingItem.status || "new"}
-                                        onChange={e => setEditingItem({ ...editingItem, status: e.target.value })}
-                                        style={inputStyle}
-                                    >
-                                        <option value="new">New</option>
-                                        <option value="read">Read</option>
-                                        <option value="archived">Archived</option>
-                                    </select>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                        <input disabled value={editingItem.phone || ""} placeholder="Phone" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.service || ""} placeholder="Service" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.city || ""} placeholder="City" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.country || ""} placeholder="Country" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    </div>
-                                </>
-                            )}
-                            {activeTab === "bookings" && (
-                                <>
-                                    <div style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>Bookings are read-only</div>
-                                    <label style={{ fontSize: 12, fontWeight: 700 }}>Client</label>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                        <input disabled value={editingItem.clientName || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.clientEmail || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    </div>
-
-                                    <label style={{ fontSize: 12, fontWeight: 700 }}>Scheduled For</label>
-                                    <div style={{ display: 'flex', gap: 16 }}>
-                                        <input disabled value={editingItem.date || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.time || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    </div>
-
-                                    <label style={{ fontSize: 12, fontWeight: 700 }}>Type & Link</label>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                        <input disabled value={editingItem.type || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.link || ""} style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    </div>
-
-                                    <label style={{ fontSize: 12, fontWeight: 700 }}>Details</label>
-                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                        <input disabled value={editingItem.phone || ""} placeholder="Phone" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.company || ""} placeholder="Company" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.city || ""} placeholder="City" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                        <input disabled value={editingItem.country || ""} placeholder="Country" style={{ ...inputStyle, background: '#f0f0f0' }} />
-                                    </div>
-                                    <textarea disabled value={editingItem.message || ""} style={{ ...inputStyle, height: 100, background: '#f0f0f0' }} />
-                                </>
-                            )}
-
-                            {/* Generic fallback for unexpected tabs or 'work' */}
-                            {!["products", "work", "team", "testimonials", "trustedBy", "stats", "enquiries", "clients", "bookings", "founderInfo"].includes(activeTab) && (
-                                <textarea placeholder="Raw JSON Data" value={JSON.stringify(editingItem, null, 2)} onChange={e => {
-                                    try { setEditingItem(JSON.parse(e.target.value)) } catch (err) { }
-                                }} style={{ ...inputStyle, height: 200, fontFamily: "monospace" }} />
-                            )}
-
-                            <button type="submit" style={{ marginTop: 16, background: "#000", color: "#fff", padding: "12px", borderRadius: 8, border: "none", fontWeight: 600, cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: 8 }}>
-                                <Save size={16} /> Save Changes
-                            </button>
-                        </form>
                     </div>
                 </div>
             )}
-
         </div>
     );
 }
-
-const inputStyle = {
-    padding: "12px",
-    borderRadius: 8,
-    border: "1px solid #ddd",
-    fontSize: 14,
-    width: "100%"
-};

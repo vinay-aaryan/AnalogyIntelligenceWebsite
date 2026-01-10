@@ -14,11 +14,21 @@ const ProductSchema = new mongoose.Schema({
 
 const WorkSchema = new mongoose.Schema({
     title: { type: String, required: true },
+    slug: { type: String, unique: true }, // URL friendly ID
     category: String,
-    desc: String,
+    desc: String, // Short description
+
+    // Detailed Page Content
+    challenge: String,
+    solution: String,
+    results: String,
+    features: [String], // Array of feature strings
+    techStack: String, // Comma separated
+
     visualUrl: String,
     youtubeUrl: String,
     videoColor: String,
+    featured: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
 });
 

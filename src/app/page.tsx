@@ -9,7 +9,7 @@ import SelectedWork from "./components/sections/SelectedWork";
 import Testimonials from "./components/sections/Testimonials";
 import FinalCTA from "./components/sections/FinalCTA";
 import dbConnect from "@/lib/db";
-import { Product, Stat, Testimonial, TeamMember, FounderInfo } from "@/models/Content";
+import { Work, Stat, Testimonial, TeamMember, FounderInfo } from "@/models/Content";
 
 export default async function Home() {
   let products = [];
@@ -21,7 +21,7 @@ export default async function Home() {
   try {
     await dbConnect();
     const [productsRaw, statsRaw, testimonialsRaw, teamRaw, founderInfoRaw] = await Promise.all([
-      Product.find({}).sort({ createdAt: -1 }).lean(),
+      Work.find({ featured: true }).sort({ createdAt: -1 }).lean(),
       Stat.find({}).sort({ createdAt: -1 }).lean(),
       Testimonial.find({}).sort({ createdAt: -1 }).lean(),
       TeamMember.find({}).sort({ createdAt: -1 }).lean(),

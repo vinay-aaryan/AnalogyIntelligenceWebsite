@@ -50,6 +50,9 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         const { collection, item, action, id } = body;
+
+        console.log(`[Admin API] ${action.toUpperCase()} ${collection}`, { id, item });
+
         const Model: any = getModel(collection);
 
         if (!Model) {
@@ -58,22 +61,48 @@ export async function POST(request: Request) {
 
         if (action === 'create') {
             const { _id, ...data } = item;
+
+            // Auto-generate slug for Work and Products if missing
+            if ((collection === 'work' || collection === 'products') && !data.slug && data.title) {
+                data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            }
+
             // Handle specific field transformations
             if (collection === 'products' && typeof data.tags === 'string') {
-                // tags are already string in schema, but good to check inputs
+                // tags are already string in schema
             }
-            await Model.create(data);
+
+            const newItem = await Model.create(data);
+            console.log(`[Admin API] Created:`, newItem._id);
+
         } else if (action === 'update') {
             const { _id, ...data } = item;
-            await Model.findByIdAndUpdate(id, data, { new: true });
+
+            // Ensure slug is present if title changed and slug is empty (though usually it exists)
+            if ((collection === 'work' || collection === 'products') && !data.slug && data.title) {
+                data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            }
+
+            const updated = await Model.findByIdAndUpdate(id, data, { new: true });
+            if (!updated) {
+                console.error(`[Admin API] Update failed: Document ${id} not found.`);
+                return NextResponse.json({ error: 'Document not found' }, { status: 404 });
+            }
+            console.log(`[Admin API] Updated:`, updated._id);
+
         } else if (action === 'delete') {
             await Model.findByIdAndDelete(id);
+            console.log(`[Admin API] Deleted:`, id);
         }
 
         return GET();
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Database Write Error:', error);
-        return NextResponse.json({ error: 'Database error' }, { status: 500 });
+        // Return clearer error for duplicate keys (slugs)
+        if (error.code === 11000) {
+            return NextResponse.json({ error: 'Duplicate key error (likely Slug). Change title or slug.' }, { status: 400 });
+        }
+        return NextResponse.json({ error: error.message || 'Database error' }, { status: 500 });
     }
 }
