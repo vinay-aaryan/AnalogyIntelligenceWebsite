@@ -8,6 +8,8 @@ import FinalCTA from "../components/sections/FinalCTA";
 import dbConnect from "@/lib/db";
 import { TrustedCompany, TeamMember } from "@/models/Content";
 
+export const dynamic = "force-dynamic";
+
 export default async function About() {
     await dbConnect();
     const [trustedByRaw, teamRaw] = await Promise.all([

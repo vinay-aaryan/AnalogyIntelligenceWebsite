@@ -11,6 +11,8 @@ import FinalCTA from "./components/sections/FinalCTA";
 import dbConnect from "@/lib/db";
 import { Work, Stat, Testimonial, TeamMember, FounderInfo } from "@/models/Content";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   let products = [];
   let stats = [];

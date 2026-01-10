@@ -4,6 +4,8 @@ import { Work as WorkModel } from "@/models/Content";
 import WorkList from "./WorkList";
 
 // Server Component
+export const dynamic = "force-dynamic";
+
 export default async function Work() {
     await dbConnect();
     const worksRaw = await WorkModel.find({}).sort({ createdAt: -1 }).lean();

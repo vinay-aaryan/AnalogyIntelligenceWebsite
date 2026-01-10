@@ -96,18 +96,14 @@ const Visuals: Record<string, React.FC> = {
     NLPVisual
 };
 
+import MediaRenderer from "@/components/ui/MediaRenderer";
+
+// ... existing imports
+
 function ProductCard({ project, i }: { project: any, i: number }) {
     // Resolve Media
-    const isVideo = project.visualUrl && project.visualUrl.match(/\.(mp4|webm|mov)$/i);
     const hasVisual = !!project.visualUrl;
-
-    // YouTube
     const hasYoutube = !!project.youtubeUrl;
-    const isYoutube = hasYoutube || (hasVisual && getYouTubeEmbedUrl(project.visualUrl));
-
-    // State
-    const [isMuted, setIsMuted] = useState(true);
-    const videoRef = useRef<HTMLVideoElement>(null);
 
     // Fallback ID-based visual
     const VisualComponent = Visuals[project.visualType] || Visuals.FinTechVisual;
@@ -135,57 +131,14 @@ function ProductCard({ project, i }: { project: any, i: number }) {
                     {/* Visual Header */}
                     <div style={{ height: 320, width: "100%", position: "relative", borderBottom: "1px solid rgba(0,0,0,0.05)", background: "#fff", overflow: "hidden" }}>
                         {hasVisual || hasYoutube ? (
-                            isYoutube ? (
-                                <iframe
-                                    src={getYouTubeEmbedUrl(project.youtubeUrl || project.visualUrl)!}
-                                    style={{ width: "100%", height: "100%", border: "none", pointerEvents: "auto" }}
-                                    title={project.title}
-                                    allow="autoplay; encrypted-media; picture-in-picture"
-                                    allowFullScreen
-                                />
-                            ) : isVideo ? (
-                                <div style={{ width: "100%", height: "100%", position: "relative" }}>
-                                    <video
-                                        ref={videoRef}
-                                        src={project.visualUrl}
-                                        autoPlay
-                                        loop
-                                        muted={isMuted}
-                                        playsInline
-                                        controls={false}
-                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                    />
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            if (videoRef.current) {
-                                                videoRef.current.muted = !isMuted;
-                                                setIsMuted(!isMuted);
-                                            }
-                                        }}
-                                        style={{
-                                            position: "absolute", bottom: 16, right: 16,
-                                            width: 32, height: 32, borderRadius: "50%",
-                                            background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)",
-                                            display: "flex", alignItems: "center", justifyContent: "center",
-                                            border: "none", cursor: "pointer", zIndex: 10
-                                        }}
-                                    >
-                                        {isMuted ? (
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" /></svg>
-                                        ) : (
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>
-                                        )}
-                                    </button>
-                                </div>
-                            ) : (
-                                <img
-                                    src={project.visualUrl}
+                            <div style={{ width: "100%", height: "100%", position: "relative" }}>
+                                <MediaRenderer
+                                    src={project.visualUrl || project.youtubeUrl}
                                     alt={project.title}
-                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    style={{ objectFit: "cover" }}
+                                    fill
                                 />
-                            )
+                            </div>
                         ) : (
                             <VisualComponent />
                         )}

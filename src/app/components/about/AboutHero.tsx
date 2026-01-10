@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import MediaRenderer from "@/components/ui/MediaRenderer";
 
 export default function AboutHero({ trustedBy }: { trustedBy: any[] }) {
     // Use passed data or empty array
@@ -81,7 +82,13 @@ export default function AboutHero({ trustedBy }: { trustedBy: any[] }) {
                                         flexShrink: 0
                                     }}>
                                         {item.logo ? (
-                                            <img src={item.logo} alt={item.name} style={{ height: 20, width: "auto", objectFit: "contain" }} />
+                                            <MediaRenderer
+                                                src={item.logo}
+                                                alt={item.name}
+                                                width={100} // Sufficient resolution
+                                                height={40}
+                                                style={{ height: 20, width: "auto", objectFit: "contain" }}
+                                            />
                                         ) : null}
                                         <span style={{ fontSize: 14, fontWeight: 700, color: "#333" }}>{item.name}</span>
                                     </div>

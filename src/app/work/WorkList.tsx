@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { getMediaType, getYouTubeEmbedUrl } from "../../utils/mediaUtils";
+import MediaRenderer from "@/components/ui/MediaRenderer";
 
 export default function WorkList({ works }: { works: any[] }) {
     if (works.length === 0) {
@@ -18,13 +18,7 @@ export default function WorkList({ works }: { works: any[] }) {
     return (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(500px, 1fr))", gap: 40 }}>
             {works.map((work: any, i: number) => {
-                const hasYoutube = !!work.youtubeUrl;
-                const mediaType = hasYoutube
-                    ? 'youtube'
-                    : getMediaType(work.visualUrl);
-
-                // Get correct embed URL
-                const youtubeEmbed = getYouTubeEmbedUrl(work.youtubeUrl || work.visualUrl);
+                const hasMedia = !!(work.visualUrl || work.youtubeUrl);
 
                 return (
                     <Link href={`/work/${work.slug || '#'}`} key={work._id || i} style={{ textDecoration: "none" }}>
@@ -50,19 +44,13 @@ export default function WorkList({ works }: { works: any[] }) {
                             {/* Video/Image Area */}
                             <div style={{ aspectRatio: "16/9", width: "100%", background: "#f2f2f2", position: "relative", overflow: "hidden" }}>
 
-                                {mediaType === 'youtube' && youtubeEmbed ? (
-                                    <div style={{ pointerEvents: "none", width: "100%", height: "100%" }}>
-                                        <iframe
-                                            src={youtubeEmbed}
-                                            style={{ width: "100%", height: "100%", border: "none" }}
-                                            title={work.title}
-                                            loading="lazy"
-                                        />
-                                    </div>
-                                ) : mediaType === 'video' ? (
-                                    <video src={work.visualUrl} autoPlay loop muted playsInline style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                                ) : mediaType === 'image' ? (
-                                    <img src={work.visualUrl} alt={work.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                {hasMedia ? (
+                                    <MediaRenderer
+                                        src={work.visualUrl || work.youtubeUrl}
+                                        alt={work.title}
+                                        fill
+                                        style={{ objectFit: "cover" }}
+                                    />
                                 ) : (
                                     // Fallback Color Gradient
                                     <div style={{ position: "absolute", inset: 0, background: work.videoColor || "linear-gradient(45deg, #333, #000)" }} />

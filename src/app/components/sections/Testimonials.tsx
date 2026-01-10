@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Star, User } from "lucide-react";
-import { getMediaType, getYouTubeEmbedUrl } from "../../../utils/mediaUtils";
+import MediaRenderer from "@/components/ui/MediaRenderer";
+import { getMediaType } from "../../../utils/mediaUtils";
 
 export default function Testimonials({ testimonials }: { testimonials: any[] }) {
     if (!testimonials || testimonials.length === 0) return null;
@@ -76,29 +77,12 @@ export default function Testimonials({ testimonials }: { testimonials: any[] }) 
                                             ? { flex: 1, width: "100%", background: "#000", position: "relative", minHeight: 200 }
                                             : { width: "100%", height: isVideo ? 400 : 250, background: "#000", position: "relative", flexShrink: 0 }
                                     }>
-                                        {mediaType === 'youtube' ? (
-                                            <iframe
-                                                src={getYouTubeEmbedUrl(t.visualUrl)!}
-                                                style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0, border: "none" }}
-                                                title={t.author + " Testimonial"}
-                                                allow="autoplay; encrypted-media; picture-in-picture"
-                                                allowFullScreen
-                                            />
-                                        ) : mediaType === 'video' ? (
-                                            <video
-                                                src={t.visualUrl}
-                                                controls
-                                                muted
-                                                playsInline
-                                                style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }}
-                                            />
-                                        ) : (
-                                            <img
-                                                src={t.visualUrl}
-                                                alt={t.author}
-                                                style={{ width: "100%", height: "100%", objectFit: "contain", position: "absolute", inset: 0 }}
-                                            />
-                                        )}
+                                        <MediaRenderer
+                                            src={t.visualUrl}
+                                            alt={t.author + " Testimonial"}
+                                            fill
+                                            style={{ objectFit: "cover" }}
+                                        />
                                     </div>
                                 )}
 
@@ -114,7 +98,7 @@ export default function Testimonials({ testimonials }: { testimonials: any[] }) 
                                     <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                                         {!hasTopMedia && (
                                             t.visualUrl ? (
-                                                <img src={t.visualUrl} alt={t.author} style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover" }} />
+                                                <MediaRenderer src={t.visualUrl} alt={t.author} width={64} height={64} style={{ borderRadius: "50%", objectFit: "cover" }} />
                                             ) : (
                                                 <div style={{
                                                     width: 64, height: 64, borderRadius: "50%",

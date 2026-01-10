@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Linkedin } from "lucide-react";
 import Link from "next/link";
+import MediaRenderer from "@/components/ui/MediaRenderer";
 
 export default function AboutTeam({ team }: { team: any[] }) {
     if (!team) return null;
@@ -31,7 +32,7 @@ export default function AboutTeam({ team }: { team: any[] }) {
                             }}
                         >
                             <div style={{
-                                width: 100, height: 100,
+                                width: 110, height: 110,
                                 borderRadius: "50%",
                                 background: "#ffffffff",
                                 boxShadow: "0 8px 18px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1)",
@@ -43,10 +44,15 @@ export default function AboutTeam({ team }: { team: any[] }) {
                                 justifyContent: "center",
                                 fontSize: 40,
                                 fontWeight: 700,
-                                color: "#ccc"
+                                color: "#ccc",
+                                position: "relative" // Added for Next.js Image fill
                             }}>
                                 {member.image ?
-                                    <img src={member.image} alt={member.name} style={{ width: "118%", height: "118%", objectFit: "contain" }} />
+                                    <MediaRenderer
+                                        src={member.image}
+                                        alt={member.name}
+                                        style={{ objectFit: "contain", width: "125px", height: "125px" }} // Changed to cover for better avatar look
+                                    />
                                     : member.role}
                             </div>
 
