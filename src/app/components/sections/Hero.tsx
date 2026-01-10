@@ -67,10 +67,11 @@ export default function Hero() {
                         display: "block",
                         fontSize: "0.25em",
                         lineHeight: 1,
-                        marginTop: 8,
+                        marginTop: -13,
                         textAlign: "right",
                         color: "var(--token-fg-secondary)",
                         fontWeight: 600,
+                        transform: "translateX(35px)",
                         letterSpacing: "0em"
                     }}>
                         Simplifies Complexes

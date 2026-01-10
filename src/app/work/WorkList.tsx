@@ -9,8 +9,8 @@ export default function WorkList({ works }: { works: any[] }) {
     if (works.length === 0) {
         return (
             <div style={{ textAlign: "center", padding: 60, background: "#f5f5f5", borderRadius: 24 }}>
-                <h3 style={{ fontSize: 20, fontWeight: 700, color: "#999" }}>No projects added yet.</h3>
-                <p style={{ color: "#aaa" }}>Visit the Admin Panel to add your work.</p>
+                <h3 style={{ fontSize: 20, fontWeight: 700, color: "#4a4a4aff" }}>No projects added yet</h3>
+                <p style={{ color: "#aaa" }}></p>
             </div>
         );
     }
