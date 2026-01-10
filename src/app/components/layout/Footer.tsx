@@ -28,7 +28,7 @@ function FooterContent() {
             {/* Background Texture (Optional subtle noise or grid) */}
             <div style={{ position: "absolute", inset: 0, opacity: 0.1, backgroundImage: "radial-gradient(#333 1px, transparent 1px)", backgroundSize: "30px 30px", pointerEvents: "none" }} />
 
-            <motion.div style={{ y, padding: "120px 0 40px" }}>
+            <motion.div style={{ y, padding: "125px 0 40px" }}>
                 <div className="container" style={{ position: "relative", zIndex: 1 }}>
 
                     {/* Massive CTA Section */}
@@ -86,26 +86,36 @@ function FooterContent() {
 
                         {/* Column 1: Brand */}
                         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                            <h3 style={{ fontSize: 24, fontWeight: 800 }}>Analogy</h3>
+                            <h3 style={{ fontSize: 24, color: "#fff", fontWeight: 800 }}>Analogy Intelligence</h3>
                             <p style={{ color: "#888", lineHeight: 1.6, maxWidth: 250 }}>
                                 Crafting digital experiences that merge logic with creativity.
                             </p>
                             <div style={{ display: "flex", gap: 16 }}>
-                                {[<Twitter size={20} />, <Instagram size={20} />, <Linkedin size={20} />, <Github size={20} />].map((icon, i) => (
-                                    <div key={i} style={{
-                                        width: 40, height: 40,
-                                        borderRadius: "50%",
-                                        background: "#1a1a1a",
-                                        display: "flex", alignItems: "center", justifyContent: "center",
-                                        cursor: "pointer",
-                                        color: "#fff",
-                                        transition: "background 0.2s"
-                                    }}
+                                {[
+                                    { icon: <Twitter size={20} />, href: "https://x.com/analogyAI" },
+                                    { icon: <Instagram size={20} />, href: "https://www.instagram.com/betweenpauses.aaryan?igsh=MW9yODBubXVjMXRkaA%3D%3D&utm_source=qr" },
+                                    { icon: <Linkedin size={20} />, href: "https://linkedin.com/company/analogy-intelligence" },
+                                    { icon: <Github size={20} />, href: "https://github.com/vinay-aaryan" }
+                                ].map((item, i) => (
+                                    <a
+                                        key={i}
+                                        href={item.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            width: 40, height: 40,
+                                            borderRadius: "50%",
+                                            background: "#1a1a1a",
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            cursor: "pointer",
+                                            color: "#fff",
+                                            transition: "background 0.2s"
+                                        }}
                                         onMouseEnter={(e) => (e.currentTarget.style.background = "#333")}
                                         onMouseLeave={(e) => (e.currentTarget.style.background = "#1a1a1a")}
                                     >
-                                        {icon}
-                                    </div>
+                                        {item.icon}
+                                    </a>
                                 ))}
                             </div>
                         </div>
@@ -126,12 +136,12 @@ function FooterContent() {
                         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                             <h4 style={{ fontSize: 14, fontWeight: 700, opacity: 0.5, textTransform: "uppercase", letterSpacing: "0.1em" }}>CONTACT</h4>
                             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                                <a href="mailto:hello@analogy.co" style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 16, color: "#fff" }}>
-                                    <Mail size={18} color="#888" /> hello@analogy.co
+                                <a href="mailto:aaryanpatel20.08.2004@gmail.com" style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 16, color: "#fff" }}>
+                                    <Mail size={18} color="#888" /> hello@analogy.com
                                 </a>
                                 <div style={{ display: "flex", alignItems: "start", gap: 12, fontSize: 16, color: "#888", lineHeight: 1.5 }}>
                                     <MapPin size={18} style={{ marginTop: 4, flexShrink: 0 }} />
-                                    <span>123 Innovation Dr,<br />Tech City, TC 94043</span>
+                                    <span>India<br /></span>
                                 </div>
                             </div>
                         </div>
@@ -140,21 +150,22 @@ function FooterContent() {
 
                     {/* Bottom Bar */}
                     <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 20 }}>
-                        <p style={{ fontSize: 14, color: "#444" }}>© 2024 Analogy Systems Inc.</p>
+                        <p style={{ fontSize: 14, color: "#444" }}>© 2025 Analogy Intelligence</p>
                         <div style={{ display: "flex", gap: 32 }}>
-                            <Link href="#" style={{ fontSize: 14, color: "#444" }}>Privacy Policy</Link>
-                            <Link href="#" style={{ fontSize: 14, color: "#444" }}>Terms</Link>
+                            <Link href="/privacy" style={{ fontSize: 14, color: "#444" }}>Privacy Policy</Link>
+                            <Link href="/terms" style={{ fontSize: 14, color: "#444" }}>Terms</Link>
                         </div>
                     </div>
 
                 </div>
-            </motion.div>
+
+            </motion.div >
 
             <style jsx global>{`
                 .footer-link:hover {
                     color: #fff !important;
                 }
             `}</style>
-        </footer>
+        </footer >
     );
 }

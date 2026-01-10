@@ -68,9 +68,9 @@ export default function AboutHero({ trustedBy }: { trustedBy: any[] }) {
                             paddingBottom: 20
                         }}>
 
-                            <div className="animate-marquee">
-                                {/* Duplicate 12 times to ensure seamless infinite scroll even on wide screens */}
-                                {Array(12).fill(logos).flat().map((item, i) => (
+                            <div className="animate-marquee" style={{ paddingRight: 32 }}>
+                                {/* Duplicate 30 times to ensure seamless infinite scroll even on wide screens and few logos */}
+                                {Array(30).fill(logos).flat().map((item, i) => (
                                     <div key={i} style={{
                                         display: "flex", alignItems: "center", gap: 10,
                                         background: "#F3F3F3", // Cement bg

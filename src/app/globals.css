@@ -11,7 +11,7 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
     --background: #ffffff;
     --foreground: #000000;
@@ -32,7 +32,13 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;:root {
+  font-family: var(--font-main);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
   /* Orbai Exact Tokens from HTML */
   --token-bg-page: var(--token-4f00a517-d75a-4557-9433-caf4536a911d, #f5f5f5);
   --token-bg-surface: #ffffff;
@@ -194,7 +200,7 @@ a {
   /* Hardware acceleration hack */
   transform: translateZ(0);
 }
-}
+
 
 /* Services Page Layout */
 @media (min-width: 968px) {

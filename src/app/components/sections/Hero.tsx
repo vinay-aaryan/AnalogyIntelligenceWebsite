@@ -70,10 +70,10 @@ export default function Hero() {
                         marginTop: 8,
                         textAlign: "right",
                         color: "var(--token-fg-secondary)",
-                        fontWeight: 400,
+                        fontWeight: 600,
                         letterSpacing: "0em"
                     }}>
-                        simplifies complexes.
+                        Simplifies Complexes
                     </span>
                 </h1>
 

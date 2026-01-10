@@ -30,7 +30,7 @@ const salesOnApril4th = db.getCollection('sales').find({
 }).count();
 
 // Print a message to the output window.
-console.log(`${salesOnApril4th} sales occurred in 2014.`);
+console.log(`${salesOnApril4th} sales occurred on April 4th, 2014.`);
 
 // Here we run an aggregation and open a cursor to the results.
 // Use '.toArray()' to exhaust the cursor to return the whole result set.
