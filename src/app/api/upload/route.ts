@@ -13,6 +13,15 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No file received' }, { status: 400 });
         }
 
+        // Check if Vercel Blob is configured (Production)
+        if (process.env.BLOB_READ_WRITE_TOKEN) {
+            // Lazy import to avoid build errors if package issues exist (though we installed it)
+            const { put } = await import('@vercel/blob');
+            const blob = await put(file.name, file, { access: 'public' });
+            return NextResponse.json({ url: blob.url });
+        }
+
+        // Fallback: Local Filesystem (Development / Render Disk)
         const buffer = Buffer.from(await file.arrayBuffer());
         const filename = Date.now() + "_" + file.name.replaceAll(" ", "_");
         const uploadDir = path.join(process.cwd(), 'public/uploads');
