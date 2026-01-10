@@ -1,12 +1,12 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
-import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, Check, Loader2, PartyPopper } from "lucide-react";
-import confetti from 'canvas-confetti';
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, Check, Loader2 } from "lucide-react";
+import confetti from 'canvas-confetti';
 
-export default function Consultation() {
+function ConsultationContent() {
     const searchParams = useSearchParams();
     const demoRequested = searchParams.get('demo') === 'true';
     const projectSlug = searchParams.get('project');
@@ -186,7 +186,8 @@ export default function Consultation() {
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 margin: "0 auto 32px",
                                 boxShadow: "0 12px 24px rgba(0,0,0,0.2)"
-                            }}>
+                            }}
+                            >
                                 <Check size={48} color="#fff" strokeWidth={3} />
                             </div>
 
@@ -613,5 +614,13 @@ export default function Consultation() {
                 </div>
             </div>
         </main>
+    );
+}
+
+export default function Consultation() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <ConsultationContent />
+        </Suspense>
     );
 }
