@@ -76,7 +76,13 @@ body {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* Removed overflow-x: hidden to fix sticky positioning */
+}
+
+.page-container {
+    width: 100%;
+    position: relative;
+    /* Removed overflow-x: hidden as it breaks sticky positioning relative to viewport */
 }
 
 /* Typography Defaults */
@@ -119,7 +125,7 @@ a {
   border: 1px solid #ffffff;
   /* Stronger, sharper shadow for "cement" look */
   box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1);
-  overflow: hidden;
+  /* Removed overflow: hidden to fix sticky positioning context */
   display: flex;
   flex-direction: column;
 }
@@ -197,8 +203,7 @@ a {
   gap: 32px;
   animation: marquee 60s linear infinite;
   will-change: transform;
-  /* Hardware acceleration hack */
-  transform: translateZ(0);
+  /* Removed transform: translateZ(0) to fix sticky behavior */
 }
 
 
@@ -211,7 +216,7 @@ a {
 
     .sticky-col {
         position: relative;
-        height: 100%;
+        /* Removed height: 100% to fix sticky behavior */
     }
 
     .sticky-content {

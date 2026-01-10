@@ -187,7 +187,6 @@ function ArticleSection({ service, index }: { service: ServiceItem, index: numbe
     return (
         <article style={{
             display: "grid",
-            gridTemplateColumns: "1fr",
             gap: 40,
             paddingTop: 80,
             paddingBottom: 80,
